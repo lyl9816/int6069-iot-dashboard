@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-HK" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>智慧教室 IoT 管理平台</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 简单内联样式：项目真正写时可以拆成独立 CSS 文件 -->
+  <style>
+    :root {
+      --bg: #f7f6f2;
+      --surface: #ffffff;
+      --border: #ddd;
+      --text: #222;
+      --accent: #01696f;
+      --danger: #c0392b;
+      --success: #27ae60;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 1rem 1.5rem;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem 3rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+    .card h3 {
+      margin: 0 0 .5rem;
+      font-size: 1rem;
+    }
+    .value {
+      font-size: 1.6rem;
+      font-weight: 600;
+    }
+    .status-pill {
+      display: inline-block;
+      padding: .2rem .6rem;
+      border-radius: 999px;
+      font-size: .75rem;
+      margin-left: .5rem;
+    }
+    .status-ok { background: #e2f6ec; color: var(--success); }
+    .status-warn { background: #fdecea; color: var(--danger); }
+    .section {
+      margin-top: 2rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+    }
+    th, td {
+      padding: .5rem .75rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    th { background: #f2f1ec; }
+    .btn {
+      padding: .4rem .8rem;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: .85rem;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <strong>智慧教室 IoT 管理平台</strong>
+      <div style="font-size: .8rem; color: #666;">ENV + Fingerprint + ToF Alarm</div>
+    </div>
+    <div style="font-size:.8rem;">
+      上次更新：<span id="last-updated">--</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 顶部总览卡片 -->
+    <section class="section">
+      <div class="grid">
+        <div class="card">
+          <h3>当前温度</h3>
+          <div class="value" id="temp-value">-- °C</div>
+          <div style="font-size:.8rem;color:#666;">
+            状态：<span id="comfort-state">--</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>当前湿度</h3>
+          <div class="value" id="humi-value">-- %</div>
+        </div>
+        <div class="card">
+          <h3>最新门禁结果</h3>
+          <div class="value" id="access-result">--</div>
+          <div style="font-size:.8rem;color:#666;">
+            用户 ID：<span id="access-user">--</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>报警状态</h3>
+          <div class="value" id="alarm-status">--</div>
+          <div style="font-size:.8rem;color:#666;">
+            最近报警：<span id="alarm-time">--</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 环境监测区：图表可以用 ThingSpeak 内嵌或 JS 绘制 -->
+    <section class="section">
+      <h2>环境监测</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>温度曲线</h3>
+          <iframe id="temp-chart" src="YOUR_THINGSPEAK_TEMP_CHART_URL"
+                  width="100%" height="260" frameborder="0"></iframe>
+        </div>
+        <div class="card">
+          <h3>湿度曲线</h3>
+          <iframe id="humi-chart" src="YOUR_THINGSPEAK_HUMI_CHART_URL"
+                  width="100%" height="260" frameborder="0"></iframe>
+        </div>
+        <div class="card">
+          <h3>统计信息</h3>
+          <p>平均温度：<span id="avg-temp">--</span></p>
+          <p>最高温度：<span id="max-temp">--</span></p>
+          <p>最低温度：<span id="min-temp">--</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 门禁日志 -->
+    <section class="section">
+      <h2>门禁日志</h2>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>用户 ID</th>
+              <th>结果</th>
+            </tr>
+          </thead>
+          <tbody id="access-table">
+            <!-- JS 动态插入 -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 报警与控制 -->
+    <section class="section">
+      <h2>安全报警与远程控制</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>当前距离</h3>
+          <div class="value" id="distance-value">-- cm</div>
+          <p>报警次数：<span id="alert-count">--</span></p>
+        </div>
+        <div class="card">
+          <h3>远程控制</h3>
+          <button class="btn btn-primary" id="btn-alarm-on">开启报警</button>
+          <button class="btn btn-outline" id="btn-alarm-off">关闭报警</button>
+          <button class="btn btn-outline" id="btn-reset-alert">清零报警次数</button>
+          <p style="font-size:.8rem;color:#666;margin-top:.5rem;">
+            提示：当前版本如未实现双向控制，可在报告中说明为未来扩展。
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // 伪代码：定时从云端获取 JSON 数据更新界面
+    async function fetchData() {
+      try {
+        // TODO: 替换为实际 API 地址（例如你自己做的后端或 ThingSpeak 组合接口）
+        // const res = await fetch('YOUR_API_ENDPOINT');
+        // const data = await res.json();
+
+        // Demo 用假数据
+        const data = {
+          env_node: { temperature: 24.8, humidity: 63.2, comfort_state: "comfortable" },
+          access_node: { last_user_id: 2, last_result: "success", updated_at: "2026-03-31 13:10" },
+          alarm_node: { distance: 42, alarm_status: "ON", alert_count: 3, updated_at: "2026-03-31 13:11" }
+        };
+
+        document.getElementById('temp-value').textContent =
+          data.env_node.temperature.toFixed(1) + " °C";
+        document.getElementById('humi-value').textContent =
+          data.env_node.humidity.toFixed(1) + " %";
+        document.getElementById('comfort-state').textContent =
+          data.env_node.comfort_state;
+
+        document.getElementById('access-result').textContent =
+          data.access_node.last_result === "success" ? "Success" : "Fail";
+        document.getElementById('access-user').textContent =
+          data.access_node.last_user_id;
+
+        document.getElementById('alarm-status').textContent =
+          data.alarm_node.alarm_status;
+        document.getElementById('alarm-time').textContent =
+          data.alarm_node.updated_at;
+        document.getElementById('distance-value').textContent =
+          data.alarm_node.distance + " cm";
+        document.getElementById('alert-count').textContent =
+          data.alarm_node.alert_count;
+        document.getElementById('last-updated').textContent =
+          new Date().toLocaleTimeString();
+
+        // access-table 部分在真实实现中要用 data.access_logs 来渲染
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // 定时刷新
+    fetchData();
+    setInterval(fetchData, 10000);
+
+    // 远程控制按钮：目前仅示例，真实情况要调用你们的控制 API 或 M5 remote
+    document.getElementById('btn-alarm-on').addEventListener('click', () => {
+      alert('这里可以调用 API 开启报警（或者跳转到 M5 Remote 页面）');
+    });
+    document.getElementById('btn-alarm-off').addEventListener('click', () => {
+      alert('这里可以调用 API 关闭报警');
+    });
+    document.getElementById('btn-reset-alert').addEventListener('click', () => {
+      alert('这里可以调用 API 清零报警次数');
+    });
+  </script>
+</body>
+</html>
