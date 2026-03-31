@@ -1,275 +1,529 @@
 <!DOCTYPE html>
-<html lang="zh-HK" data-theme="light">
+<html lang="zh-HK">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>智慧教室 IoT 管理平台</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- 简单内联样式：项目真正写时可以拆成独立 CSS 文件 -->
   <style>
     :root {
-      --bg: #f7f6f2;
+      --bg: #f6f4ef;
       --surface: #ffffff;
-      --border: #ddd;
-      --text: #222;
-      --accent: #01696f;
-      --danger: #c0392b;
-      --success: #27ae60;
+      --surface-2: #fbfaf7;
+      --border: #ddd7cf;
+      --text: #222222;
+      --muted: #666666;
+      --primary: #01696f;
+      --primary-2: #0c4e54;
+      --hot: #c0392b;
+      --cold: #2c7be5;
+      --ok: #2e8b57;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      --radius: 16px;
     }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(180deg, #f8f6f2 0%, #f2efe8 100%);
       color: var(--text);
+      line-height: 1.6;
     }
     header {
-      padding: 1rem 1.5rem;
-      background: #fff;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding: 22px 24px;
       position: sticky;
       top: 0;
       z-index: 10;
     }
-    .container {
-      max-width: 1200px;
+    .header-wrap {
+      max-width: 1240px;
       margin: 0 auto;
-      padding: 1rem 1.5rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      box-shadow: var(--shadow);
+    }
+    header h1 {
+      margin: 0 0 4px;
+      font-size: 1.75rem;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+    .status-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 14px;
+      min-width: 260px;
+      box-shadow: var(--shadow);
+      font-size: 0.92rem;
+    }
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 28px 24px 40px;
+    }
+    .section { margin-bottom: 28px; }
+    .section h2 {
+      margin: 0 0 14px;
+      font-size: 1.18rem;
+    }
+    .hero-note {
+      background: linear-gradient(135deg, rgba(1,105,111,0.08), rgba(44,123,229,0.08));
+      border: 1px solid rgba(1,105,111,0.18);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
     }
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
     }
     .card h3 {
-      margin: 0 0 .5rem;
+      margin: 0 0 8px;
       font-size: 1rem;
     }
     .value {
-      font-size: 1.6rem;
-      font-weight: 600;
+      font-size: 1.8rem;
+      font-weight: 750;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
     }
-    .status-pill {
+    .muted {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .tag {
       display: inline-block;
-      padding: .2rem .6rem;
+      padding: 4px 10px;
       border-radius: 999px;
-      font-size: .75rem;
-      margin-left: .5rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-top: 8px;
     }
-    .status-ok { background: #e2f6ec; color: var(--success); }
-    .status-warn { background: #fdecea; color: var(--danger); }
-    .section {
-      margin-top: 2rem;
+    .tag-ok { background: #eaf7ef; color: var(--ok); }
+    .tag-hot { background: #fdecea; color: var(--hot); }
+    .tag-cold { background: #eaf2ff; color: var(--cold); }
+    .tag-warn { background: #fff1e7; color: #b75a07; }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+    }
+    .summary-list {
+      display: grid;
+      gap: 12px;
+    }
+    .summary-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+    iframe {
+      width: 100%;
+      min-height: 265px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: var(--shadow);
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: .9rem;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
     }
     th, td {
-      padding: .5rem .75rem;
+      padding: 12px 14px;
       border-bottom: 1px solid var(--border);
       text-align: left;
+      font-size: 0.95rem;
+      vertical-align: top;
     }
-    th { background: #f2f1ec; }
-    .btn {
-      padding: .4rem .8rem;
-      border-radius: 4px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      font-size: .85rem;
+    th { background: #f2efe9; }
+    tr:last-child td { border-bottom: none; }
+    .steps {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
     }
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
+    .steps ul { margin: 0; padding-left: 20px; }
+    .steps li { margin: 8px 0; }
+    code {
+      background: #f1efeb;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.92em;
     }
-    .btn-outline {
-      background: transparent;
-      color: var(--accent);
-      border-color: var(--accent);
-    }
-    @media (max-width: 600px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: .5rem;
+    @media (max-width: 920px) {
+      .two-col, .header-wrap {
+        grid-template-columns: 1fr;
+        display: grid;
       }
+      .status-box { min-width: 0; }
+    }
+    @media (max-width: 640px) {
+      .container { padding: 18px 16px 32px; }
+      header { padding: 16px; }
+      header h1 { font-size: 1.45rem; }
+      .value { font-size: 1.45rem; }
     }
   </style>
 </head>
 <body>
   <header>
-    <div>
-      <strong>智慧教室 IoT 管理平台</strong>
-      <div style="font-size: .8rem; color: #666;">ENV + Fingerprint + ToF Alarm</div>
-    </div>
-    <div style="font-size:.8rem;">
-      上次更新：<span id="last-updated">--</span>
+    <div class="header-wrap">
+      <div class="logo-row">
+        <div class="logo">IoT</div>
+        <div>
+          <h1>智慧教室 IoT 管理平台</h1>
+          <p>整合三块 M5 的 ThingSpeak 数据：环境监测、门禁记录与安全警报。</p>
+        </div>
+      </div>
+      <div class="status-box">
+        <div><strong>Dashboard 状态</strong></div>
+        <div class="muted">上次刷新：<span id="last-updated">--</span></div>
+        <div class="muted">M5-1 ENV：3310921</div>
+        <div class="muted">M5-2 Access：3310941</div>
+        <div class="muted">M5-3 Alarm：3310977</div>
+      </div>
     </div>
   </header>
 
   <main class="container">
-    <!-- 顶部总览卡片 -->
     <section class="section">
+      <div class="hero-note">
+        这版已经帮你填好三块 M5 的 ThingSpeak channel 资料：ENV 节点 <code>3310921</code>、门禁节点 <code>3310941</code>、警报节点 <code>3310977</code>。[file:50]
+        目前我先假设门禁和警报的 field 顺序都是 1/2/3；如果你后面确认字段定义不同，只要再改 <code>FIELD_MAP</code> 即可。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>系统总览</h2>
       <div class="grid">
         <div class="card">
           <h3>当前温度</h3>
           <div class="value" id="temp-value">-- °C</div>
-          <div style="font-size:.8rem;color:#666;">
-            状态：<span id="comfort-state">--</span>
-          </div>
+          <div class="muted">舒适状态：<span id="comfort-state">--</span></div>
+          <div id="comfort-tag" class="tag tag-warn">等待数据</div>
         </div>
         <div class="card">
           <h3>当前湿度</h3>
           <div class="value" id="humi-value">-- %</div>
+          <div class="muted">环境节点（M5-1）</div>
+        </div>
+        <div class="card">
+          <h3>当前气压</h3>
+          <div class="value" id="pres-value">-- hPa</div>
+          <div class="muted">环境节点（M5-1）</div>
         </div>
         <div class="card">
           <h3>最新门禁结果</h3>
           <div class="value" id="access-result">--</div>
-          <div style="font-size:.8rem;color:#666;">
-            用户 ID：<span id="access-user">--</span>
-          </div>
+          <div class="muted">用户 ID：<span id="access-user">--</span></div>
         </div>
         <div class="card">
-          <h3>报警状态</h3>
+          <h3>当前报警状态</h3>
           <div class="value" id="alarm-status">--</div>
-          <div style="font-size:.8rem;color:#666;">
-            最近报警：<span id="alarm-time">--</span>
+          <div class="muted">当前距离：<span id="distance-value">--</span></div>
+        </div>
+        <div class="card">
+          <h3>报警次数</h3>
+          <div class="value" id="alert-count">--</div>
+          <div class="muted">报警节点（M5-3）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section two-col">
+      <div>
+        <h2>环境趋势图</h2>
+        <div class="grid">
+          <iframe id="temp-chart" title="温度图表"></iframe>
+          <iframe id="humi-chart" title="湿度图表"></iframe>
+          <iframe id="pres-chart" title="气压图表"></iframe>
+        </div>
+      </div>
+      <div>
+        <h2>节点摘要</h2>
+        <div class="summary-list">
+          <div class="summary-item">
+            <strong>M5-1 环境节点</strong><br>
+            <span class="muted">温度：<span id="summary-temp">--</span></span><br>
+            <span class="muted">湿度：<span id="summary-humi">--</span></span><br>
+            <span class="muted">气压：<span id="summary-pres">--</span></span><br>
+            <span class="muted">状态：<span id="summary-env-state">--</span></span>
+          </div>
+          <div class="summary-item">
+            <strong>M5-2 门禁节点</strong><br>
+            <span class="muted">用户：<span id="summary-access-user">--</span></span><br>
+            <span class="muted">结果：<span id="summary-access-result">--</span></span><br>
+            <span class="muted">失败次数：<span id="summary-failed-count">--</span></span>
+          </div>
+          <div class="summary-item">
+            <strong>M5-3 警报节点</strong><br>
+            <span class="muted">距离：<span id="summary-distance">--</span></span><br>
+            <span class="muted">报警：<span id="summary-alarm-status">--</span></span><br>
+            <span class="muted">报警次数：<span id="summary-alert-count">--</span></span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 环境监测区：图表可以用 ThingSpeak 内嵌或 JS 绘制 -->
     <section class="section">
-      <h2>环境监测</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>温度曲线</h3>
-          <iframe id="temp-chart" src="YOUR_THINGSPEAK_TEMP_CHART_URL"
-                  width="100%" height="260" frameborder="0"></iframe>
-        </div>
-        <div class="card">
-          <h3>湿度曲线</h3>
-          <iframe id="humi-chart" src="YOUR_THINGSPEAK_HUMI_CHART_URL"
-                  width="100%" height="260" frameborder="0"></iframe>
-        </div>
-        <div class="card">
-          <h3>统计信息</h3>
-          <p>平均温度：<span id="avg-temp">--</span></p>
-          <p>最高温度：<span id="max-temp">--</span></p>
-          <p>最低温度：<span id="min-temp">--</span></p>
-        </div>
-      </div>
+      <h2>门禁与警报日志（最新数据）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>模块</th>
+            <th>最新值 1</th>
+            <th>最新值 2</th>
+            <th>最新值 3</th>
+            <th>更新时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>M5-2 门禁</td>
+            <td id="log-access-f1">--</td>
+            <td id="log-access-f2">--</td>
+            <td id="log-access-f3">--</td>
+            <td id="log-access-time">--</td>
+          </tr>
+          <tr>
+            <td>M5-3 警报</td>
+            <td id="log-alarm-f1">--</td>
+            <td id="log-alarm-f2">--</td>
+            <td id="log-alarm-f3">--</td>
+            <td id="log-alarm-time">--</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
 
-    <!-- 门禁日志 -->
     <section class="section">
-      <h2>门禁日志</h2>
-      <div class="card">
-        <table>
-          <thead>
-            <tr>
-              <th>时间</th>
-              <th>用户 ID</th>
-              <th>结果</th>
-            </tr>
-          </thead>
-          <tbody id="access-table">
-            <!-- JS 动态插入 -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- 报警与控制 -->
-    <section class="section">
-      <h2>安全报警与远程控制</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>当前距离</h3>
-          <div class="value" id="distance-value">-- cm</div>
-          <p>报警次数：<span id="alert-count">--</span></p>
-        </div>
-        <div class="card">
-          <h3>远程控制</h3>
-          <button class="btn btn-primary" id="btn-alarm-on">开启报警</button>
-          <button class="btn btn-outline" id="btn-alarm-off">关闭报警</button>
-          <button class="btn btn-outline" id="btn-reset-alert">清零报警次数</button>
-          <p style="font-size:.8rem;color:#666;margin-top:.5rem;">
-            提示：当前版本如未实现双向控制，可在报告中说明为未来扩展。
-          </p>
-        </div>
+      <h2>当前已填好的参数</h2>
+      <div class="steps">
+        <ul>
+          <li>M5-1 ENV：Channel ID = <code>3310921</code>，Field 1/2/3 = Temperature / Humidity / Pressure。[file:50]</li>
+          <li>M5-2 Access：Channel ID = <code>3310941</code>，Read API Key = <code>F9BO8QS7NFVQI2T6</code>。</li>
+          <li>M5-3 Alarm：Channel ID = <code>3310977</code>，Read API Key = <code>0EXYZ8AHIY1RXIBT</code>。</li>
+        </ul>
       </div>
     </section>
   </main>
 
   <script>
-    // 伪代码：定时从云端获取 JSON 数据更新界面
-    async function fetchData() {
-      try {
-        // TODO: 替换为实际 API 地址（例如你自己做的后端或 ThingSpeak 组合接口）
-        // const res = await fetch('YOUR_API_ENDPOINT');
-        // const data = await res.json();
+    const CHANNELS = {
+      env: {
+        id: '3310921',
+        readKey: ''
+      },
+      access: {
+        id: '3310941',
+        readKey: 'F9BO8QS7NFVQI2T6'
+      },
+      alarm: {
+        id: '3310977',
+        readKey: '0EXYZ8AHIY1RXIBT'
+      }
+    };
 
-        // Demo 用假数据
-        const data = {
-          env_node: { temperature: 24.8, humidity: 63.2, comfort_state: "comfortable" },
-          access_node: { last_user_id: 2, last_result: "success", updated_at: "2026-03-31 13:10" },
-          alarm_node: { distance: 42, alarm_status: "ON", alert_count: 3, updated_at: "2026-03-31 13:11" }
-        };
+    const FIELD_MAP = {
+      env: { temperature: 1, humidity: 2, pressure: 3 },
+      access: { userId: 1, result: 2, failedCount: 3 },
+      alarm: { distance: 1, alarmStatus: 2, alertCount: 3 }
+    };
 
-        document.getElementById('temp-value').textContent =
-          data.env_node.temperature.toFixed(1) + " °C";
-        document.getElementById('humi-value').textContent =
-          data.env_node.humidity.toFixed(1) + " %";
-        document.getElementById('comfort-state').textContent =
-          data.env_node.comfort_state;
+    function buildFieldUrl(channelId, fieldId, readKey = '') {
+      let url = `https://api.thingspeak.com/channels/${channelId}/fields/${fieldId}/last.json`;
+      if (readKey) url += `?api_key=${readKey}`;
+      return url;
+    }
 
-        document.getElementById('access-result').textContent =
-          data.access_node.last_result === "success" ? "Success" : "Fail";
-        document.getElementById('access-user').textContent =
-          data.access_node.last_user_id;
+    function buildChartUrl(channelId, fieldId) {
+      return `https://thingspeak.com/channels/${channelId}/charts/${fieldId}?bgcolor=%23ffffff&color=%2301696f&dynamic=true&results=20&type=line`;
+    }
 
-        document.getElementById('alarm-status').textContent =
-          data.alarm_node.alarm_status;
-        document.getElementById('alarm-time').textContent =
-          data.alarm_node.updated_at;
-        document.getElementById('distance-value').textContent =
-          data.alarm_node.distance + " cm";
-        document.getElementById('alert-count').textContent =
-          data.alarm_node.alert_count;
-        document.getElementById('last-updated').textContent =
-          new Date().toLocaleTimeString();
+    async function fetchLastField(channelId, fieldId, readKey = '') {
+      const res = await fetch(buildFieldUrl(channelId, fieldId, readKey));
+      if (!res.ok) {
+        throw new Error(`ThingSpeak request failed: channel ${channelId}, field ${fieldId}, status ${res.status}`);
+      }
+      const data = await res.json();
+      return { value: data[`field${fieldId}`], created_at: data.created_at };
+    }
 
-        // access-table 部分在真实实现中要用 data.access_logs 来渲染
-      } catch (e) {
-        console.error(e);
+    async function fetchEnvNode() {
+      const [temp, humi, pres] = await Promise.all([
+        fetchLastField(CHANNELS.env.id, FIELD_MAP.env.temperature, CHANNELS.env.readKey),
+        fetchLastField(CHANNELS.env.id, FIELD_MAP.env.humidity, CHANNELS.env.readKey),
+        fetchLastField(CHANNELS.env.id, FIELD_MAP.env.pressure, CHANNELS.env.readKey)
+      ]);
+      return {
+        temperature: parseFloat(temp.value),
+        humidity: parseFloat(humi.value),
+        pressure: parseFloat(pres.value),
+        updated_at: temp.created_at
+      };
+    }
+
+    async function fetchAccessNode() {
+      const [userId, result, failedCount] = await Promise.all([
+        fetchLastField(CHANNELS.access.id, FIELD_MAP.access.userId, CHANNELS.access.readKey),
+        fetchLastField(CHANNELS.access.id, FIELD_MAP.access.result, CHANNELS.access.readKey),
+        fetchLastField(CHANNELS.access.id, FIELD_MAP.access.failedCount, CHANNELS.access.readKey)
+      ]);
+      return {
+        raw1: userId.value,
+        raw2: result.value,
+        raw3: failedCount.value,
+        user_id: userId.value,
+        result: result.value === '1' ? 'Success' : 'Fail',
+        failed_count: failedCount.value,
+        updated_at: userId.created_at
+      };
+    }
+
+    async function fetchAlarmNode() {
+      const [distance, alarmStatus, alertCount] = await Promise.all([
+        fetchLastField(CHANNELS.alarm.id, FIELD_MAP.alarm.distance, CHANNELS.alarm.readKey),
+        fetchLastField(CHANNELS.alarm.id, FIELD_MAP.alarm.alarmStatus, CHANNELS.alarm.readKey),
+        fetchLastField(CHANNELS.alarm.id, FIELD_MAP.alarm.alertCount, CHANNELS.alarm.readKey)
+      ]);
+      return {
+        raw1: distance.value,
+        raw2: alarmStatus.value,
+        raw3: alertCount.value,
+        distance: parseFloat(distance.value),
+        alarm_status: alarmStatus.value === '1' ? 'ON' : 'OFF',
+        alert_count: alertCount.value,
+        updated_at: distance.created_at
+      };
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function setComfortTag(state) {
+      const tag = document.getElementById('comfort-tag');
+      if (!tag) return;
+      if (state === 'Too Hot') {
+        tag.className = 'tag tag-hot';
+        tag.textContent = '温度偏高';
+      } else if (state === 'Too Cold') {
+        tag.className = 'tag tag-cold';
+        tag.textContent = '温度偏低';
+      } else if (state === 'Comfortable') {
+        tag.className = 'tag tag-ok';
+        tag.textContent = '环境舒适';
+      } else {
+        tag.className = 'tag tag-warn';
+        tag.textContent = '等待数据';
       }
     }
 
-    // 定时刷新
-    fetchData();
-    setInterval(fetchData, 10000);
+    function setEnvCharts() {
+      document.getElementById('temp-chart').src = buildChartUrl(CHANNELS.env.id, FIELD_MAP.env.temperature);
+      document.getElementById('humi-chart').src = buildChartUrl(CHANNELS.env.id, FIELD_MAP.env.humidity);
+      document.getElementById('pres-chart').src = buildChartUrl(CHANNELS.env.id, FIELD_MAP.env.pressure);
+    }
 
-    // 远程控制按钮：目前仅示例，真实情况要调用你们的控制 API 或 M5 remote
-    document.getElementById('btn-alarm-on').addEventListener('click', () => {
-      alert('这里可以调用 API 开启报警（或者跳转到 M5 Remote 页面）');
-    });
-    document.getElementById('btn-alarm-off').addEventListener('click', () => {
-      alert('这里可以调用 API 关闭报警');
-    });
-    document.getElementById('btn-reset-alert').addEventListener('click', () => {
-      alert('这里可以调用 API 清零报警次数');
-    });
+    async function fetchData() {
+      try {
+        const [env, access, alarm] = await Promise.all([
+          fetchEnvNode(),
+          fetchAccessNode(),
+          fetchAlarmNode()
+        ]);
+
+        setText('temp-value', isNaN(env.temperature) ? '-- °C' : env.temperature.toFixed(1) + ' °C');
+        setText('humi-value', isNaN(env.humidity) ? '-- %' : env.humidity.toFixed(1) + ' %');
+        setText('pres-value', isNaN(env.pressure) ? '-- hPa' : env.pressure.toFixed(1) + ' hPa');
+
+        let comfort = '--';
+        if (!isNaN(env.temperature) && env.temperature > 25) comfort = 'Too Hot';
+        else if (!isNaN(env.temperature) && env.temperature < 15) comfort = 'Too Cold';
+        else if (!isNaN(env.temperature)) comfort = 'Comfortable';
+        setText('comfort-state', comfort);
+        setComfortTag(comfort);
+
+        setText('summary-temp', isNaN(env.temperature) ? '--' : env.temperature.toFixed(1) + ' °C');
+        setText('summary-humi', isNaN(env.humidity) ? '--' : env.humidity.toFixed(1) + ' %');
+        setText('summary-pres', isNaN(env.pressure) ? '--' : env.pressure.toFixed(1) + ' hPa');
+        setText('summary-env-state', comfort);
+
+        setText('access-result', access.result);
+        setText('access-user', access.user_id);
+        setText('summary-access-user', access.user_id);
+        setText('summary-access-result', access.result);
+        setText('summary-failed-count', access.failed_count);
+
+        setText('alarm-status', alarm.alarm_status);
+        setText('distance-value', isNaN(alarm.distance) ? '-- cm' : alarm.distance.toFixed(1) + ' cm');
+        setText('alert-count', alarm.alert_count);
+        setText('summary-distance', isNaN(alarm.distance) ? '--' : alarm.distance.toFixed(1) + ' cm');
+        setText('summary-alarm-status', alarm.alarm_status);
+        setText('summary-alert-count', alarm.alert_count);
+
+        setText('log-access-f1', access.raw1);
+        setText('log-access-f2', access.raw2);
+        setText('log-access-f3', access.raw3);
+        setText('log-access-time', access.updated_at ? new Date(access.updated_at).toLocaleString() : '--');
+
+        setText('log-alarm-f1', alarm.raw1);
+        setText('log-alarm-f2', alarm.raw2);
+        setText('log-alarm-f3', alarm.raw3);
+        setText('log-alarm-time', alarm.updated_at ? new Date(alarm.updated_at).toLocaleString() : '--');
+
+        setText('last-updated', new Date().toLocaleString());
+      } catch (error) {
+        console.error(error);
+        setText('last-updated', '读取失败，请检查 field 定义或 channel 数据');
+      }
+    }
+
+    setEnvCharts();
+    fetchData();
+    setInterval(fetchData, 15000);
   </script>
 </body>
 </html>
