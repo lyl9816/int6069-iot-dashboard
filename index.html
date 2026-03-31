@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>智慧教室 IoT 管理平台</title>
+  <title>Smart Classroom IoT Dashboard</title>
   <style>
     :root {
       --bg: #f6f4ef;
@@ -212,16 +212,16 @@
       <div class="logo-row">
         <div class="logo">IoT</div>
         <div>
-          <h1>智慧教室 IoT 管理平台</h1>
-          <p>整合三块 M5 的 ThingSpeak 数据：环境监测、门禁记录与安全警报。</p>
+          <h1>Smart Classroom IoT Dashboard</h1>
+          <p>The ability to monitor classroom environment, access control, and security alarms at any time makes managing a smart classroom as intuitive and worry-free as looking at a dashboard.</p>
         </div>
       </div>
       <div class="status-box">
-        <div><strong>Dashboard 状态</strong></div>
-        <div class="muted">上次刷新：<span id="last-updated">--</span></div>
-        <div class="muted">M5-1 ENV：3310921</div>
-        <div class="muted">M5-2 Access：3310941</div>
-        <div class="muted">M5-3 Alarm：3310977</div>
+        <div><strong>Dashboard Status</strong></div>
+        <div class="muted">Last refresh: <span id="last-updated">--</span></div>
+        <div class="muted">M5-1 ENV: 3310921</div>
+        <div class="muted">M5-2 Access: 3310941</div>
+        <div class="muted">M5-3 Alarm: 3310977</div>
       </div>
     </div>
   </header>
@@ -229,105 +229,104 @@
   <main class="container">
     <section class="section">
       <div class="hero-note">
-        这版已经帮你填好三块 M5 的 ThingSpeak channel 资料：ENV 节点 <code>3310921</code>、门禁节点 <code>3310941</code>、警报节点 <code>3310977</code>。[file:50]
-        目前我先假设门禁和警报的 field 顺序都是 1/2/3；如果你后面确认字段定义不同，只要再改 <code>FIELD_MAP</code> 即可。
+        This web-based dashboard aggregates real-time data from three M5Stack devices to monitor classroom environment, track access events, and visualize safety alarms using ThingSpeak, giving teachers a clear, centralized view of their smart classroom.
       </div>
     </section>
 
     <section class="section">
-      <h2>系统总览</h2>
+      <h2>System Overview</h2>
       <div class="grid">
         <div class="card">
-          <h3>当前温度</h3>
+          <h3>Current Temperature</h3>
           <div class="value" id="temp-value">-- °C</div>
-          <div class="muted">舒适状态：<span id="comfort-state">--</span></div>
-          <div id="comfort-tag" class="tag tag-warn">等待数据</div>
+          <div class="muted">Comfort status: <span id="comfort-state">--</span></div>
+          <div id="comfort-tag" class="tag tag-warn">Waiting for data</div>
         </div>
         <div class="card">
-          <h3>当前湿度</h3>
+          <h3>Current Humidity</h3>
           <div class="value" id="humi-value">-- %</div>
-          <div class="muted">环境节点（M5-1）</div>
+          <div class="muted">Environmental node (M5-1)</div>
         </div>
         <div class="card">
-          <h3>当前气压</h3>
+          <h3>Current Pressure</h3>
           <div class="value" id="pres-value">-- hPa</div>
-          <div class="muted">环境节点（M5-1）</div>
+          <div class="muted">Environmental node (M5-1)</div>
         </div>
         <div class="card">
-          <h3>最新门禁结果</h3>
+          <h3>Latest Access Result</h3>
           <div class="value" id="access-result">--</div>
-          <div class="muted">用户 ID：<span id="access-user">--</span></div>
+          <div class="muted">User ID: <span id="access-user">--</span></div>
         </div>
         <div class="card">
-          <h3>当前报警状态</h3>
+          <h3>Current Alarm Status</h3>
           <div class="value" id="alarm-status">--</div>
-          <div class="muted">当前距离：<span id="distance-value">--</span></div>
+          <div class="muted">Current distance: <span id="distance-value">--</span></div>
         </div>
         <div class="card">
-          <h3>报警次数</h3>
+          <h3>Alert Count</h3>
           <div class="value" id="alert-count">--</div>
-          <div class="muted">报警节点（M5-3）</div>
+          <div class="muted">Alarm node (M5-3)</div>
         </div>
       </div>
     </section>
 
     <section class="section two-col">
       <div>
-        <h2>环境趋势图</h2>
+        <h2>Environmental Trends</h2>
         <div class="grid">
-          <iframe id="temp-chart" title="温度图表"></iframe>
-          <iframe id="humi-chart" title="湿度图表"></iframe>
-          <iframe id="pres-chart" title="气压图表"></iframe>
+          <iframe id="temp-chart" title="Temperature chart"></iframe>
+          <iframe id="humi-chart" title="Humidity chart"></iframe>
+          <iframe id="pres-chart" title="Pressure chart"></iframe>
         </div>
       </div>
       <div>
-        <h2>节点摘要</h2>
+        <h2>Node Summary</h2>
         <div class="summary-list">
           <div class="summary-item">
-            <strong>M5-1 环境节点</strong><br>
-            <span class="muted">温度：<span id="summary-temp">--</span></span><br>
-            <span class="muted">湿度：<span id="summary-humi">--</span></span><br>
-            <span class="muted">气压：<span id="summary-pres">--</span></span><br>
-            <span class="muted">状态：<span id="summary-env-state">--</span></span>
+            <strong>M5-1 Environmental Node</strong><br>
+            <span class="muted">Temperature: <span id="summary-temp">--</span></span><br>
+            <span class="muted">Humidity: <span id="summary-humi">--</span></span><br>
+            <span class="muted">Pressure: <span id="summary-pres">--</span></span><br>
+            <span class="muted">Status: <span id="summary-env-state">--</span></span>
           </div>
           <div class="summary-item">
-            <strong>M5-2 门禁节点</strong><br>
-            <span class="muted">用户：<span id="summary-access-user">--</span></span><br>
-            <span class="muted">结果：<span id="summary-access-result">--</span></span><br>
-            <span class="muted">失败次数：<span id="summary-failed-count">--</span></span>
+            <strong>M5-2 Access Node</strong><br>
+            <span class="muted">User: <span id="summary-access-user">--</span></span><br>
+            <span class="muted">Result: <span id="summary-access-result">--</span></span><br>
+            <span class="muted">Failed attempts: <span id="summary-failed-count">--</span></span>
           </div>
           <div class="summary-item">
-            <strong>M5-3 警报节点</strong><br>
-            <span class="muted">距离：<span id="summary-distance">--</span></span><br>
-            <span class="muted">报警：<span id="summary-alarm-status">--</span></span><br>
-            <span class="muted">报警次数：<span id="summary-alert-count">--</span></span>
+            <strong>M5-3 Alarm Node</strong><br>
+            <span class="muted">Distance: <span id="summary-distance">--</span></span><br>
+            <span class="muted">Alarm: <span id="summary-alarm-status">--</span></span><br>
+            <span class="muted">Alert count: <span id="summary-alert-count">--</span></span>
           </div>
         </div>
       </div>
     </section>
 
     <section class="section">
-      <h2>门禁与警报日志（最新数据）</h2>
+      <h2>Access and Alarm Logs</h2>
       <table>
         <thead>
           <tr>
-            <th>模块</th>
-            <th>最新值 1</th>
-            <th>最新值 2</th>
-            <th>最新值 3</th>
-            <th>更新时间</th>
+            <th>Module</th>
+            <th>Latest Value 1</th>
+            <th>Latest Value 2</th>
+            <th>Latest Value 3</th>
+            <th>Updated Time</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>M5-2 门禁</td>
+            <td>M5-2 Access</td>
             <td id="log-access-f1">--</td>
             <td id="log-access-f2">--</td>
             <td id="log-access-f3">--</td>
             <td id="log-access-time">--</td>
           </tr>
           <tr>
-            <td>M5-3 警报</td>
+            <td>M5-3 Alarm</td>
             <td id="log-alarm-f1">--</td>
             <td id="log-alarm-f2">--</td>
             <td id="log-alarm-f3">--</td>
@@ -338,12 +337,12 @@
     </section>
 
     <section class="section">
-      <h2>当前已填好的参数</h2>
+      <h2>Configured Parameters</h2>
       <div class="steps">
         <ul>
-          <li>M5-1 ENV：Channel ID = <code>3310921</code>，Field 1/2/3 = Temperature / Humidity / Pressure。[file:50]</li>
-          <li>M5-2 Access：Channel ID = <code>3310941</code>，Read API Key = <code>F9BO8QS7NFVQI2T6</code>。</li>
-          <li>M5-3 Alarm：Channel ID = <code>3310977</code>，Read API Key = <code>0EXYZ8AHIY1RXIBT</code>。</li>
+          <li>M5-1 ENV: Channel ID = <code>3310921</code>, Field 1/2/3 = Temperature / Humidity / Pressure.</li>
+          <li>M5-2 Access: Channel ID = <code>3310941</code>, Read API Key = <code>F9BO8QS7NFVQI2T6</code>.</li>
+          <li>M5-3 Alarm: Channel ID = <code>3310977</code>, Read API Key = <code>0EXYZ8AHIY1RXIBT</code>.</li>
         </ul>
       </div>
     </section>
@@ -353,7 +352,7 @@
     const CHANNELS = {
       env: {
         id: '3310921',
-        readKey: 'FHBWCGE1MAM8XI8X'
+        readKey: ''
       },
       access: {
         id: '3310941',
@@ -448,16 +447,16 @@
       if (!tag) return;
       if (state === 'Too Hot') {
         tag.className = 'tag tag-hot';
-        tag.textContent = '温度偏高';
+        tag.textContent = 'Too Hot';
       } else if (state === 'Too Cold') {
         tag.className = 'tag tag-cold';
-        tag.textContent = '温度偏低';
+        tag.textContent = 'Too Cold';
       } else if (state === 'Comfortable') {
         tag.className = 'tag tag-ok';
-        tag.textContent = '环境舒适';
+        tag.textContent = 'Comfortable';
       } else {
         tag.className = 'tag tag-warn';
-        tag.textContent = '等待数据';
+        tag.textContent = 'Waiting for data';
       }
     }
 
@@ -517,7 +516,7 @@
         setText('last-updated', new Date().toLocaleString());
       } catch (error) {
         console.error(error);
-        setText('last-updated', '读取失败，请检查 field 定义或 channel 数据');
+        setText('last-updated', 'Read failed. Please check the field mapping or channel data.');
       }
     }
 
