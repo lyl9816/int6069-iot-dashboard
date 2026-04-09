@@ -1,443 +1,877 @@
 <!DOCTYPE html>
-<html lang="zh-HK" data-theme="light">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>智慧教室 IoT 管理平台</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     :root {
-      --bg: #f7f6f2;
-      --surface: #ffffff;
-      --border: #ddd;
-      --text: #222;
-      --muted: #666;
-      --accent: #01696f;
-      --danger: #c0392b;
-      --success: #27ae60;
+      --bg: #f4f7fb;
+      --surface: rgba(255,255,255,0.94);
+      --surface-2: #f8fafc;
+      --border: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+      --primary: #0f766e;
+      --primary-dark: #115e59;
+      --primary-soft: #ccfbf1;
+      --danger: #dc2626;
+      --danger-dark: #b91c1c;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      --radius: 20px;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
+      font-family: "Inter", "Noto Sans SC", sans-serif;
       color: var(--text);
-    }
-
-    header {
-      padding: 1rem 1.5rem;
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      background:
+        radial-gradient(circle at top left, rgba(15,118,110,0.10), transparent 25%),
+        radial-gradient(circle at top right, rgba(59,130,246,0.08), transparent 22%),
+        linear-gradient(180deg, #f8fbff 0%, #f4f7fb 100%);
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1440px;
       margin: 0 auto;
-      padding: 1rem 1.5rem 3rem;
+      padding: 32px 24px 64px;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1rem;
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 40px;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .hero-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.85);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--muted);
+      box-shadow: var(--shadow);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #10b981;
+      display: inline-block;
+    }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .section h2 {
+      margin: 0 0 18px;
+      font-size: 26px;
+      letter-spacing: -0.02em;
     }
 
     .card {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(17,24,39,0.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      backdrop-filter: blur(10px);
     }
 
-    .card h3, .card h2 {
-      margin-top: 0;
-    }
-
-    .value {
-      font-size: 1.6rem;
+    .card-title {
+      margin: 0 0 16px;
+      font-size: 18px;
       font-weight: 700;
-      margin: 0.25rem 0 0.4rem;
-      word-break: break-word;
+      letter-spacing: -0.02em;
     }
 
-    .section {
-      margin-top: 2rem;
+    .top-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(220px, 1fr));
+      gap: 20px;
     }
 
-    .muted {
-      font-size: 0.85rem;
+    .metric-card {
+      min-height: 168px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .metric-label {
+      font-size: 15px;
       color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .metric-sub {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 92px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+      border: 1px solid transparent;
+    }
+
+    .status-success {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+
+    .status-danger {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+
+    .status-warning {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+    }
+
+    .status-neutral {
+      background: #f3f4f6;
+      color: #4b5563;
+      border-color: #e5e7eb;
+    }
+
+    .env-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .chart-card {
+      min-height: 420px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      background: linear-gradient(180deg, #fbfdff 0%, #f8fafc 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    .chart-wrap canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .stat-item {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+
+    .lower-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      margin-top: 28px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: #fff;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.92rem;
+      min-width: 620px;
     }
 
     th, td {
-      padding: 0.6rem 0.75rem;
-      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
       text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
     }
 
     th {
-      background: #f2f1ec;
+      background: #f8fafc;
+      color: var(--muted);
+      font-weight: 700;
     }
 
-    iframe {
-      width: 100%;
-      height: 260px;
-      border: 1px solid #cccccc;
-      border-radius: 6px;
-      background: #fff;
+    tr:hover td {
+      background: #fafcff;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .alarm-panel {
+      display: grid;
+      gap: 16px;
+    }
+
+    .alarm-box {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .alarm-big {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 8px 0 4px;
+    }
+
+    .alarm-meta {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .btn-group {
+      display: grid;
+      gap: 12px;
     }
 
     .btn {
-      padding: 0.45rem 0.8rem;
-      border-radius: 6px;
-      border: 1px solid transparent;
+      border: none;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 15px;
+      font-weight: 700;
       cursor: pointer;
-      font-size: 0.9rem;
-      margin-right: 0.5rem;
-      margin-bottom: 0.5rem;
+      transition: all 0.2s ease;
     }
 
-    .btn-primary {
-      background: var(--accent);
-      color: white;
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(15,23,42,0.08);
     }
 
-    .btn-outline {
-      background: transparent;
-      color: var(--accent);
-      border-color: var(--accent);
+    .btn-on {
+      background: var(--primary);
+      color: #fff;
     }
 
-    @media (max-width: 640px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.4rem;
+    .btn-on:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-off {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-off:hover {
+      background: var(--danger-dark);
+    }
+
+    .btn-reset {
+      background: #f3f4f6;
+      color: #111827;
+      border: 1px solid #e5e7eb;
+    }
+
+    .footer-note {
+      margin-top: 28px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 1200px) {
+      .top-grid {
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+      }
+
+      .env-grid {
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+      }
+
+      .lower-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 22px 16px 40px;
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+
+      .top-grid,
+      .env-grid,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-value {
+        font-size: 30px;
+      }
+
+      .chart-card {
+        min-height: 360px;
+      }
+
+      .chart-wrap {
+        height: 240px;
+      }
+
+      .stat-value {
+        font-size: 24px;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div>
-      <strong>智慧教室 IoT 管理平台</strong>
-      <div class="muted">环境监测 + 门禁识别 + 安全报警</div>
-    </div>
-    <div class="muted">上次更新：<span id="last-updated">--</span></div>
-  </header>
+  <div class="container">
+    <header class="hero">
+      <div>
+        <h1>智慧教室 IoT 管理平台</h1>
+        <p>实时监测环境、门禁与安全报警状态</p>
+      </div>
+      <div class="hero-right">
+        <div class="pill"><span class="dot"></span> 系统在线</div>
+        <div class="pill">最后更新：<span id="last-updated">--</span></div>
+      </div>
+    </header>
 
-  <main class="container">
-    <section class="section">
-      <div class="grid">
-        <div class="card">
-          <h3>当前温度</h3>
-          <div class="value" id="temp-value">-- °C</div>
-          <div class="muted">状态：<span id="comfort-state">--</span></div>
+    <section class="top-grid">
+      <div class="card metric-card">
+        <div>
+          <div class="metric-label">当前温度</div>
+          <div class="metric-value" id="temp-value">-- °C</div>
+          <div class="metric-sub">状态：<span id="comfort-state">--</span></div>
         </div>
+        <div class="badge">环境节点</div>
+      </div>
 
-        <div class="card">
-          <h3>当前湿度</h3>
-          <div class="value" id="humi-value">-- %</div>
-          <div class="muted">气压：<span id="pressure-value">-- hPa</span></div>
+      <div class="card metric-card">
+        <div>
+          <div class="metric-label">当前湿度</div>
+          <div class="metric-value" id="humi-value">-- %</div>
+          <div class="metric-sub">气压：<span id="pressure-value">-- hPa</span></div>
         </div>
+        <div class="badge">BME 数据</div>
+      </div>
 
-        <div class="card">
-          <h3>最新门禁结果</h3>
-          <div class="value" id="access-result">--</div>
-          <div class="muted">用户 ID：<span id="access-user">--</span></div>
-          <div class="muted">事件：<span id="access-event">--</span></div>
+      <div class="card metric-card">
+        <div>
+          <div class="metric-label">最新门禁结果</div>
+          <div id="access-result" class="status-pill status-neutral">--</div>
+          <div class="metric-sub" style="margin-top: 12px;">用户 ID：<span id="access-user">--</span></div>
+          <div class="metric-sub">事件：<span id="access-event">--</span></div>
         </div>
+        <div class="badge">门禁节点</div>
+      </div>
 
-        <div class="card">
-          <h3>报警状态</h3>
-          <div class="value" id="alarm-status">--</div>
-          <div class="muted">最近报警：<span id="alarm-time">--</span></div>
+      <div class="card metric-card">
+        <div>
+          <div class="metric-label">报警状态</div>
+          <div id="alarm-status" class="status-pill status-neutral">--</div>
+          <div class="metric-sub" style="margin-top: 12px;">最近报警：<span id="alarm-time">--</span></div>
         </div>
+        <div class="badge">安全节点</div>
       </div>
     </section>
 
     <section class="section">
       <h2>环境监测</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>温度曲线</h3>
-          <iframe
-            id="temp-chart"
-            src="https://thingspeak.com/channels/3310921/charts/1?api_key=FHBWCGE1MAM8XI8X&dynamic=true&results=60&type=line&title=Temperature&xaxis=Time&yaxis=%C2%B0C"
-            frameborder="0"></iframe>
+
+      <div class="env-grid">
+        <div class="card chart-card">
+          <h3 class="card-title">温度曲线</h3>
+          <div class="chart-wrap">
+            <canvas id="tempChart"></canvas>
+          </div>
         </div>
 
-        <div class="card">
-          <h3>湿度曲线</h3>
-          <iframe
-            id="humi-chart"
-            src="https://thingspeak.com/channels/3310921/charts/2?api_key=FHBWCGE1MAM8XI8X&dynamic=true&results=60&type=line&title=Humidity&xaxis=Time&yaxis=%25"
-            frameborder="0"></iframe>
+        <div class="card chart-card">
+          <h3 class="card-title">湿度曲线</h3>
+          <div class="chart-wrap">
+            <canvas id="humiChart"></canvas>
+          </div>
         </div>
 
-        <div class="card">
-          <h3>气压曲线</h3>
-          <iframe
-            id="pressure-chart"
-            src="https://thingspeak.com/channels/3310921/charts/3?api_key=FHBWCGE1MAM8XI8X&dynamic=true&results=60&type=line&title=Pressure&xaxis=Time&yaxis=hPa"
-            frameborder="0"></iframe>
+        <div class="card chart-card">
+          <h3 class="card-title">气压曲线</h3>
+          <div class="chart-wrap">
+            <canvas id="pressureChart"></canvas>
+          </div>
         </div>
+      </div>
 
-        <div class="card">
-          <h3>统计信息</h3>
-          <p>平均温度：<span id="avg-temp">--</span></p>
-          <p>最高温度：<span id="max-temp">--</span></p>
-          <p>最低温度：<span id="min-temp">--</span></p>
-          <p>当前气压：<span id="pressure-now">-- hPa</span></p>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-label">平均温度</div>
+          <div class="stat-value" id="avg-temp">-- °C</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">最高温度</div>
+          <div class="stat-value" id="max-temp">-- °C</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">最低温度</div>
+          <div class="stat-value" id="min-temp">-- °C</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">当前气压</div>
+          <div class="stat-value" id="pressure-now">-- hPa</div>
         </div>
       </div>
     </section>
 
-    <section class="section">
-      <h2>门禁日志</h2>
+    <section class="lower-grid">
       <div class="card">
-        <table>
-          <thead>
-            <tr>
-              <th>时间</th>
-              <th>用户 ID</th>
-              <th>结果</th>
-            </tr>
-          </thead>
-          <tbody id="access-table">
-            <tr><td colspan="3">加载中...</td></tr>
-          </tbody>
-        </table>
+        <h2>门禁日志</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>用户 ID</th>
+                <th>结果</th>
+              </tr>
+            </thead>
+            <tbody id="access-table">
+              <tr>
+                <td>加载中...</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>安全报警与远程控制</h2>
+        <div class="alarm-panel">
+          <div class="alarm-box">
+            <div class="metric-label">当前距离</div>
+            <div class="alarm-big" id="distance-value">-- cm</div>
+            <div class="alarm-meta">
+              报警次数：<span id="alert-count">--</span><br>
+              报警启用：
+              <span id="alarm-enabled-text" class="status-pill status-neutral" style="margin-top: 8px;">--</span>
+            </div>
+          </div>
+
+          <div class="alarm-box">
+            <div class="card-title">远程控制</div>
+            <div class="btn-group">
+              <button class="btn btn-on" id="btn-alarm-on">开启报警</button>
+              <button class="btn btn-off" id="btn-alarm-off">关闭报警</button>
+              <button class="btn btn-reset" id="btn-reset-alert">重置计数</button>
+            </div>
+            <p class="metric-sub" style="margin-top: 12px;">
+              提示：当前版本如未实现双向控制，可在报告中说明为未来扩展。
+            </p>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="section">
-      <h2>安全报警与远程控制</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>当前距离</h3>
-          <div class="value" id="distance-value">-- cm</div>
-          <p>报警次数：<span id="alert-count">--</span></p>
-          <p>报警启用：<span id="alarm-enabled-text">--</span></p>
-        </div>
-
-        <div class="card">
-          <h3>远程控制</h3>
-          <button class="btn btn-primary" id="btn-alarm-on">开启报警</button>
-          <button class="btn btn-outline" id="btn-alarm-off">关闭报警</button>
-          <button class="btn btn-outline" id="btn-reset-alert">清零报警次数</button>
-          <p class="muted" style="margin-top:.5rem;">
-            提示：当前版本如未实现双向控制，可在报告中说明为未来扩展。
-          </p>
-        </div>
-      </div>
-    </section>
-  </main>
+    <div class="footer-note">
+      智慧教室 IoT Dashboard · GitHub Pages
+    </div>
+  </div>
 
   <script>
-  async function fetchJson(url) {
-    const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status} ${url}`);
+    let tempChart, humiChart, pressureChart;
+
+    function getStatusClass(text) {
+      const value = String(text).toUpperCase();
+
+      if (value === 'SUCCESS' || value === 'ON' || value === 'ENABLED') {
+        return 'status-pill status-success';
+      }
+
+      if (value === 'FAIL' || value === 'OFF' || value === 'DISABLED') {
+        return 'status-pill status-danger';
+      }
+
+      if (value === '--') {
+        return 'status-pill status-neutral';
+      }
+
+      return 'status-pill status-warning';
     }
-    return res.json();
-  }
 
-  function accessResultLabel(resultCode) {
-    if (String(resultCode) === '1') return 'Success';
-    if (String(resultCode) === '0') return 'Fail';
-    return resultCode || '--';
-  }
+    function setStatusBadge(elementId, text) {
+      const el = document.getElementById(elementId);
+      el.textContent = text;
+      el.className = getStatusClass(text);
+    }
 
-  function alarmStatusLabel(alarmNum, alarmEnabled) {
-    if (alarmEnabled === 0) return 'DISABLED';
-    return alarmNum === 1 ? 'ON' : 'OFF';
-  }
+    function createOrUpdateChart(chartRef, canvasId, label, labels, data, color, yLabel) {
+      const ctx = document.getElementById(canvasId).getContext('2d');
 
-  function comfortLabel(temp) {
-    if (isNaN(temp)) return '--';
-    if (temp > 25) return 'too hot';
-    if (temp < 10) return 'too cold';
-    return 'comfortable';
-  }
+      if (chartRef) {
+        chartRef.data.labels = labels;
+        chartRef.data.datasets[0].data = data;
+        chartRef.update();
+        return chartRef;
+      }
 
-  async function fetchData() {
-    const envLastUrl =
-      'https://api.thingspeak.com/channels/3310921/feeds/last.json?api_key=FHBWCGE1MAM8XI8X';
-    const envHistoryUrl =
-      'https://api.thingspeak.com/channels/3310921/feeds.json?api_key=FHBWCGE1MAM8XI8X&results=20';
+      return new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label,
+            data,
+            borderColor: color,
+            backgroundColor: color + '22',
+            borderWidth: 2.5,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            pointBackgroundColor: color,
+            tension: 0.35,
+            fill: false
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                color: '#6b7280',
+                maxTicksLimit: 6
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: yLabel,
+                color: '#64748b',
+                font: {
+                  size: 12,
+                  weight: '600'
+                }
+              },
+              grid: {
+                color: '#e5e7eb'
+              },
+              ticks: {
+                color: '#6b7280'
+              }
+            }
+          }
+        }
+      });
+    }
 
-    const accessLastUrl =
-      'https://api.thingspeak.com/channels/3329417/feeds/last.json?api_key=B9NPZYSCJ7FQUSXY';
-    const accessHistoryUrl =
-      'https://api.thingspeak.com/channels/3329417/feeds.json?api_key=B9NPZYSCJ7FQUSXY&results=10';
+    async function fetchJson(url) {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${url}`);
+      return res.json();
+    }
 
-    const alarmLastUrl =
-      'https://api.thingspeak.com/channels/3333946/feeds/last.json?api_key=CIN03736MJUQ1J4R';
+    function accessResultLabel(resultCode) {
+      if (String(resultCode) === '1') return 'Success';
+      if (String(resultCode) === '0') return 'Fail';
+      return resultCode || '--';
+    }
 
-    try {
-      const results = await Promise.allSettled([
-        fetchJson(envLastUrl),
-        fetchJson(envHistoryUrl),
-        fetchJson(accessLastUrl),
-        fetchJson(accessHistoryUrl),
-        fetchJson(alarmLastUrl)
-      ]);
+    function alarmStatusLabel(alarmNum, alarmEnabled) {
+      if (alarmEnabled === 0) return 'DISABLED';
+      return alarmNum === 1 ? 'ON' : 'OFF';
+    }
 
-      const envLast = results[0].status === 'fulfilled' ? results[0].value : null;
-      const envHistory = results[1].status === 'fulfilled' ? results[1].value : null;
-      const accessLast = results[2].status === 'fulfilled' ? results[2].value : null;
-      const accessHistory = results[3].status === 'fulfilled' ? results[3].value : null;
-      const alarmLast = results[4].status === 'fulfilled' ? results[4].value : null;
+    function comfortLabel(temp) {
+      if (isNaN(temp)) return '--';
+      if (temp > 25) return 'Too hot';
+      if (temp < 20) return 'Too cold';
+      return 'Comfortable';
+    }
 
-      if (results[0].status === 'rejected') console.error('envLast failed:', results[0].reason);
-      if (results[1].status === 'rejected') console.error('envHistory failed:', results[1].reason);
-      if (results[2].status === 'rejected') console.error('accessLast failed:', results[2].reason);
-      if (results[3].status === 'rejected') console.error('accessHistory failed:', results[3].reason);
-      if (results[4].status === 'rejected') console.error('alarmLast failed:', results[4].reason);
+    async function fetchData() {
+      const envLastUrl =
+        'https://api.thingspeak.com/channels/3310921/feeds/last.json?api_key=FHBWCGE1MAM8XI8X';
+      const envHistoryUrl =
+        'https://api.thingspeak.com/channels/3310921/feeds.json?api_key=FHBWCGE1MAM8XI8X&results=20';
 
-      console.log('envLast:', envLast);
-      console.log('envHistory:', envHistory);
-      console.log('accessLast:', accessLast);
-      console.log('accessHistory:', accessHistory);
-      console.log('alarmLast:', alarmLast);
+      const accessLastUrl =
+        'https://api.thingspeak.com/channels/3329417/feeds/last.json?api_key=B9NPZYSCJ7FQUSXY';
+      const accessHistoryUrl =
+        'https://api.thingspeak.com/channels/3329417/feeds.json?api_key=B9NPZYSCJ7FQUSXY&results=10';
 
-      if (envLast) {
-        const temperature = Number(envLast.field1);
-        const humidity = Number(envLast.field2);
-        const pressure = Number(envLast.field3);
+      const alarmLastUrl =
+        'https://api.thingspeak.com/channels/3333946/feeds/last.json?api_key=CIN03736MJUQ1J4R';
 
-        document.getElementById('temp-value').textContent =
-          isNaN(temperature) ? '-- °C' : temperature.toFixed(1) + ' °C';
+      try {
+        const results = await Promise.allSettled([
+          fetchJson(envLastUrl),
+          fetchJson(envHistoryUrl),
+          fetchJson(accessLastUrl),
+          fetchJson(accessHistoryUrl),
+          fetchJson(alarmLastUrl)
+        ]);
 
-        document.getElementById('humi-value').textContent =
-          isNaN(humidity) ? '-- %' : humidity.toFixed(1) + ' %';
+        const envLast = results[0].status === 'fulfilled' ? results[0].value : null;
+        const envHistory = results[1].status === 'fulfilled' ? results[1].value : null;
+        const accessLast = results[2].status === 'fulfilled' ? results[2].value : null;
+        const accessHistory = results[3].status === 'fulfilled' ? results[3].value : null;
+        const alarmLast = results[4].status === 'fulfilled' ? results[4].value : null;
 
-        document.getElementById('pressure-value').textContent =
-          isNaN(pressure) ? '-- hPa' : pressure.toFixed(1) + ' hPa';
+        if (envLast) {
+          const temperature = Number(envLast.field1);
+          const humidity = Number(envLast.field2);
+          const pressure = Number(envLast.field3);
 
-        const pressureNowEl = document.getElementById('pressure-now');
-        if (pressureNowEl) {
-          pressureNowEl.textContent =
+          document.getElementById('temp-value').textContent =
+            isNaN(temperature) ? '-- °C' : temperature.toFixed(1) + ' °C';
+
+          document.getElementById('humi-value').textContent =
+            isNaN(humidity) ? '-- %' : humidity.toFixed(1) + ' %';
+
+          document.getElementById('pressure-value').textContent =
             isNaN(pressure) ? '-- hPa' : pressure.toFixed(1) + ' hPa';
+
+          document.getElementById('pressure-now').textContent =
+            isNaN(pressure) ? '-- hPa' : pressure.toFixed(1) + ' hPa';
+
+          document.getElementById('comfort-state').textContent =
+            comfortLabel(temperature);
         }
 
-        document.getElementById('comfort-state').textContent =
-          comfortLabel(temperature);
-      }
+        if (envHistory && Array.isArray(envHistory.feeds)) {
+          const feeds = envHistory.feeds;
+          const labels = feeds.map(feed =>
+            feed.created_at
+              ? new Date(feed.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              : '--'
+          );
 
-      if (envHistory && Array.isArray(envHistory.feeds)) {
-        const tempValues = envHistory.feeds
-          .map(f => Number(f.field1))
-          .filter(v => !isNaN(v));
+          const tempData = feeds.map(f => Number(f.field1));
+          const humiData = feeds.map(f => Number(f.field2));
+          const pressureData = feeds.map(f => Number(f.field3));
 
-        if (tempValues.length > 0) {
-          const avg = tempValues.reduce((sum, v) => sum + v, 0) / tempValues.length;
-          const min = Math.min(...tempValues);
-          const max = Math.max(...tempValues);
+          tempChart = createOrUpdateChart(
+            tempChart, 'tempChart', 'Temperature', labels, tempData, '#ef4444', '°C'
+          );
+          humiChart = createOrUpdateChart(
+            humiChart, 'humiChart', 'Humidity', labels, humiData, '#3b82f6', '%'
+          );
+          pressureChart = createOrUpdateChart(
+            pressureChart, 'pressureChart', 'Pressure', labels, pressureData, '#0f766e', 'hPa'
+          );
 
-          document.getElementById('avg-temp').textContent = avg.toFixed(1) + ' °C';
-          document.getElementById('max-temp').textContent = max.toFixed(1) + ' °C';
-          document.getElementById('min-temp').textContent = min.toFixed(1) + ' °C';
+          const tempValues = tempData.filter(v => !isNaN(v));
+          if (tempValues.length > 0) {
+            const avg = tempValues.reduce((sum, v) => sum + v, 0) / tempValues.length;
+            const min = Math.min(...tempValues);
+            const max = Math.max(...tempValues);
+
+            document.getElementById('avg-temp').textContent = avg.toFixed(1) + ' °C';
+            document.getElementById('max-temp').textContent = max.toFixed(1) + ' °C';
+            document.getElementById('min-temp').textContent = min.toFixed(1) + ' °C';
+          }
         }
-      }
 
-      if (accessLast) {
-        document.getElementById('access-result').textContent =
-          accessResultLabel(accessLast.field1);
+        if (accessLast) {
+          setStatusBadge('access-result', accessResultLabel(accessLast.field1));
+          document.getElementById('access-user').textContent =
+            accessLast.field3 || '--';
+          document.getElementById('access-event').textContent =
+            accessLast.field2 || '--';
+        }
 
-        document.getElementById('access-user').textContent =
-          accessLast.field3 || '--';
+        if (accessHistory && Array.isArray(accessHistory.feeds)) {
+          const tbody = document.getElementById('access-table');
+          tbody.innerHTML = '';
 
-        document.getElementById('access-event').textContent =
-          accessLast.field2 || '--';
-      }
-
-      if (accessHistory && Array.isArray(accessHistory.feeds)) {
-        const tbody = document.getElementById('access-table');
-        tbody.innerHTML = '';
-
-        if (accessHistory.feeds.length === 0) {
-          const tr = document.createElement('tr');
-          tr.innerHTML = '<td colspan="3">暂无数据</td>';
-          tbody.appendChild(tr);
-        } else {
-          accessHistory.feeds.slice().reverse().forEach(feed => {
+          if (accessHistory.feeds.length === 0) {
             const tr = document.createElement('tr');
-            const time = feed.created_at ? new Date(feed.created_at).toLocaleString() : '--';
-            const userId = feed.field3 ?? '--';
-            const result = accessResultLabel(feed.field1);
-
-            tr.innerHTML = `
-              <td>${time}</td>
-              <td>${userId}</td>
-              <td>${result}</td>
-            `;
+            tr.innerHTML = '<td colspan="3">暂无数据</td>';
             tbody.appendChild(tr);
-          });
+          } else {
+            accessHistory.feeds.slice().reverse().forEach(feed => {
+              const tr = document.createElement('tr');
+              const time = feed.created_at
+                ? new Date(feed.created_at).toLocaleString()
+                : '--';
+              const userId = feed.field3 ?? '--';
+              const result = accessResultLabel(feed.field1);
+
+              tr.innerHTML = `
+                <td>${time}</td>
+                <td>${userId}</td>
+                <td><span class="${getStatusClass(result)}">${result}</span></td>
+              `;
+              tbody.appendChild(tr);
+            });
+          }
         }
-      }
 
-      if (alarmLast) {
-        const distanceMm = Number(alarmLast.field1);
-        const alarmNum = Number(alarmLast.field2);
-        const alarmEnabled = Number(alarmLast.field3);
-        const alertCount = Number(alarmLast.field4);
+        if (alarmLast) {
+          const distanceMm = Number(alarmLast.field1);
+          const alarmNum = Number(alarmLast.field2);
+          const alarmEnabled = Number(alarmLast.field3);
+          const alertCount = Number(alarmLast.field4);
 
-        document.getElementById('alarm-status').textContent =
-          alarmStatusLabel(alarmNum, alarmEnabled);
+          setStatusBadge('alarm-status', alarmStatusLabel(alarmNum, alarmEnabled));
 
-        document.getElementById('alarm-time').textContent =
-          alarmLast.created_at ? new Date(alarmLast.created_at).toLocaleString() : '--';
+          document.getElementById('alarm-time').textContent =
+            alarmLast.created_at
+              ? new Date(alarmLast.created_at).toLocaleString()
+              : '--';
 
-        document.getElementById('distance-value').textContent =
-          isNaN(distanceMm) ? '-- cm' : (distanceMm / 10).toFixed(1) + ' cm';
+          document.getElementById('distance-value').textContent =
+            isNaN(distanceMm) ? '-- cm' : (distanceMm / 10).toFixed(1) + ' cm';
 
-        document.getElementById('alert-count').textContent =
-          isNaN(alertCount) ? '--' : alertCount;
+          document.getElementById('alert-count').textContent =
+            isNaN(alertCount) ? '--' : alertCount;
 
-        const alarmEnabledText = document.getElementById('alarm-enabled-text');
-        if (alarmEnabledText) {
-          alarmEnabledText.textContent = alarmEnabled === 1 ? 'Enabled' : 'Disabled';
+          setStatusBadge('alarm-enabled-text', alarmEnabled === 1 ? 'Enabled' : 'Disabled');
         }
+
+        document.getElementById('last-updated').textContent =
+          new Date().toLocaleTimeString();
+
+      } catch (e) {
+        console.error('fetchData fatal error:', e);
       }
-
-      document.getElementById('last-updated').textContent =
-        new Date().toLocaleTimeString();
-
-    } catch (e) {
-      console.error('fetchData fatal error:', e);
     }
-  }
 
-  fetchData();
-  setInterval(fetchData, 15000);
+    fetchData();
+    setInterval(fetchData, 15000);
 
-  document.getElementById('btn-alarm-on').addEventListener('click', () => {
-    alert('这里可以接报警节点控制 API / Remote 页面');
-  });
+    document.getElementById('btn-alarm-on').addEventListener('click', () => {
+      alert('这里可以接报警节点控制 API / Remote 页面');
+    });
 
-  document.getElementById('btn-alarm-off').addEventListener('click', () => {
-    alert('这里可以接报警节点关闭 API / Remote 页面');
-  });
+    document.getElementById('btn-alarm-off').addEventListener('click', () => {
+      alert('这里可以接报警节点关闭 API / Remote 页面');
+    });
 
-  document.getElementById('btn-reset-alert').addEventListener('click', () => {
-    alert('这里可以接报警计数清零 API');
-  });
-</script>
+    document.getElementById('btn-reset-alert').addEventListener('click', () => {
+      alert('这里可以接报警计数清零 API');
+    });
+  </script>
 </body>
 </html>
