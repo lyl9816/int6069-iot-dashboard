@@ -1,528 +1,443 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-HK" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Classroom IoT Dashboard</title>
+  <title>智慧教室 IoT 管理平台</title>
   <style>
     :root {
-      --bg: #f6f4ef;
+      --bg: #f7f6f2;
       --surface: #ffffff;
-      --surface-2: #fbfaf7;
-      --border: #ddd7cf;
-      --text: #222222;
-      --muted: #666666;
-      --primary: #01696f;
-      --primary-2: #0c4e54;
-      --hot: #c0392b;
-      --cold: #2c7be5;
-      --ok: #2e8b57;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-      --radius: 16px;
+      --border: #ddd;
+      --text: #222;
+      --muted: #666;
+      --accent: #01696f;
+      --danger: #c0392b;
+      --success: #27ae60;
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: linear-gradient(180deg, #f8f6f2 0%, #f2efe8 100%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
     }
+
     header {
-      background: rgba(255,255,255,0.9);
-      backdrop-filter: blur(8px);
+      padding: 1rem 1.5rem;
+      background: #fff;
       border-bottom: 1px solid var(--border);
-      padding: 22px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       position: sticky;
       top: 0;
       z-index: 10;
     }
-    .header-wrap {
-      max-width: 1240px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: flex-start;
-    }
-    .logo-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .logo {
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      box-shadow: var(--shadow);
-    }
-    header h1 {
-      margin: 0 0 4px;
-      font-size: 1.75rem;
-    }
-    header p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.96rem;
-    }
-    .status-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 10px 14px;
-      min-width: 260px;
-      box-shadow: var(--shadow);
-      font-size: 0.92rem;
-    }
+
     .container {
-      max-width: 1240px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 28px 24px 40px;
+      padding: 1rem 1.5rem 3rem;
     }
-    .section { margin-bottom: 28px; }
-    .section h2 {
-      margin: 0 0 14px;
-      font-size: 1.18rem;
-    }
-    .hero-note {
-      background: linear-gradient(135deg, rgba(1,105,111,0.08), rgba(44,123,229,0.08));
-      border: 1px solid rgba(1,105,111,0.18);
-      border-radius: var(--radius);
-      padding: 16px 18px;
-      box-shadow: var(--shadow);
-    }
+
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
     }
+
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: var(--shadow);
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
     }
-    .card h3 {
-      margin: 0 0 8px;
-      font-size: 1rem;
+
+    .card h3, .card h2 {
+      margin-top: 0;
     }
+
     .value {
-      font-size: 1.8rem;
-      font-weight: 750;
-      margin-bottom: 6px;
-      letter-spacing: -0.02em;
-    }
-    .muted {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-    .tag {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.8rem;
+      font-size: 1.6rem;
       font-weight: 700;
-      margin-top: 8px;
+      margin: 0.25rem 0 0.4rem;
+      word-break: break-word;
     }
-    .tag-ok { background: #eaf7ef; color: var(--ok); }
-    .tag-hot { background: #fdecea; color: var(--hot); }
-    .tag-cold { background: #eaf2ff; color: var(--cold); }
-    .tag-warn { background: #fff1e7; color: #b75a07; }
-    .two-col {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 16px;
+
+    .section {
+      margin-top: 2rem;
     }
-    .summary-list {
-      display: grid;
-      gap: 12px;
+
+    .muted {
+      font-size: 0.85rem;
+      color: var(--muted);
     }
-    .summary-item {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 16px;
-    }
-    iframe {
-      width: 100%;
-      min-height: 265px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: #fff;
-      box-shadow: var(--shadow);
-    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      background: var(--surface);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow);
+      font-size: 0.92rem;
     }
+
     th, td {
-      padding: 12px 14px;
+      padding: 0.6rem 0.75rem;
       border-bottom: 1px solid var(--border);
       text-align: left;
-      font-size: 0.95rem;
-      vertical-align: top;
     }
-    th { background: #f2efe9; }
-    tr:last-child td { border-bottom: none; }
-    .steps {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: var(--shadow);
+
+    th {
+      background: #f2f1ec;
     }
-    .steps ul { margin: 0; padding-left: 20px; }
-    .steps li { margin: 8px 0; }
-    code {
-      background: #f1efeb;
-      padding: 2px 6px;
+
+    iframe {
+      width: 100%;
+      height: 260px;
+      border: 1px solid #cccccc;
       border-radius: 6px;
-      font-size: 0.92em;
+      background: #fff;
     }
-    @media (max-width: 920px) {
-      .two-col, .header-wrap {
-        grid-template-columns: 1fr;
-        display: grid;
-      }
-      .status-box { min-width: 0; }
+
+    .btn {
+      padding: 0.45rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
     }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
     @media (max-width: 640px) {
-      .container { padding: 18px 16px 32px; }
-      header { padding: 16px; }
-      header h1 { font-size: 1.45rem; }
-      .value { font-size: 1.45rem; }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+      }
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="header-wrap">
-      <div class="logo-row">
-        <div class="logo">IoT</div>
-        <div>
-          <h1>Smart Classroom IoT Dashboard</h1>
-          <p>The ability to monitor classroom environment, access control, and security alarms at any time makes managing a smart classroom as intuitive and worry-free as looking at a dashboard.</p>
-        </div>
-      </div>
-      <div class="status-box">
-        <div><strong>Dashboard Status</strong></div>
-        <div class="muted">Last refresh: <span id="last-updated">--</span></div>
-        <div class="muted">M5-1 ENV: 3310921</div>
-        <div class="muted">M5-2 Access: 3310941</div>
-        <div class="muted">M5-3 Alarm: 3310977</div>
-      </div>
+    <div>
+      <strong>智慧教室 IoT 管理平台</strong>
+      <div class="muted">环境监测 + 门禁识别 + 安全报警</div>
     </div>
+    <div class="muted">上次更新：<span id="last-updated">--</span></div>
   </header>
 
   <main class="container">
     <section class="section">
-      <div class="hero-note">
-        This web-based dashboard aggregates real-time data from three M5Stack devices to monitor classroom environment, track access events, and visualize safety alarms using ThingSpeak, giving teachers a clear, centralized view of their smart classroom.
-      </div>
-    </section>
-
-    <section class="section">
-      <h2>System Overview</h2>
       <div class="grid">
         <div class="card">
-          <h3>Current Temperature</h3>
+          <h3>当前温度</h3>
           <div class="value" id="temp-value">-- °C</div>
-          <div class="muted">Comfort status: <span id="comfort-state">--</span></div>
-          <div id="comfort-tag" class="tag tag-warn">Waiting for data</div>
+          <div class="muted">状态：<span id="comfort-state">--</span></div>
         </div>
+
         <div class="card">
-          <h3>Current Humidity</h3>
+          <h3>当前湿度</h3>
           <div class="value" id="humi-value">-- %</div>
-          <div class="muted">Environmental node (M5-1)</div>
+          <div class="muted">气压：<span id="pressure-value">-- hPa</span></div>
         </div>
+
         <div class="card">
-          <h3>Current Pressure</h3>
-          <div class="value" id="pres-value">-- hPa</div>
-          <div class="muted">Environmental node (M5-1)</div>
-        </div>
-        <div class="card">
-          <h3>Latest Access Result</h3>
+          <h3>最新门禁结果</h3>
           <div class="value" id="access-result">--</div>
-          <div class="muted">User ID: <span id="access-user">--</span></div>
+          <div class="muted">用户 ID：<span id="access-user">--</span></div>
+          <div class="muted">事件：<span id="access-event">--</span></div>
         </div>
+
         <div class="card">
-          <h3>Current Alarm Status</h3>
+          <h3>报警状态</h3>
           <div class="value" id="alarm-status">--</div>
-          <div class="muted">Current distance: <span id="distance-value">--</span></div>
+          <div class="muted">最近报警：<span id="alarm-time">--</span></div>
         </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>环境监测</h2>
+      <div class="grid">
         <div class="card">
-          <h3>Alert Count</h3>
-          <div class="value" id="alert-count">--</div>
-          <div class="muted">Alarm node (M5-3)</div>
+          <h3>温度曲线</h3>
+          <iframe
+            id="temp-chart"
+            src="https://thingspeak.com/channels/3310921/charts/1?api_key=FHBWCGE1MAM8XI8X&dynamic=true&results=60&type=line&title=Temperature&xaxis=Time&yaxis=%C2%B0C"
+            frameborder="0"></iframe>
         </div>
-      </div>
-    </section>
 
-    <section class="section two-col">
-      <div>
-        <h2>Environmental Trends</h2>
-        <div class="grid">
-          <iframe id="temp-chart" title="Temperature chart"></iframe>
-          <iframe id="humi-chart" title="Humidity chart"></iframe>
-          <iframe id="pres-chart" title="Pressure chart"></iframe>
+        <div class="card">
+          <h3>湿度曲线</h3>
+          <iframe
+            id="humi-chart"
+            src="https://thingspeak.com/channels/3310921/charts/2?api_key=FHBWCGE1MAM8XI8X&dynamic=true&results=60&type=line&title=Humidity&xaxis=Time&yaxis=%25"
+            frameborder="0"></iframe>
         </div>
-      </div>
-      <div>
-        <h2>Node Summary</h2>
-        <div class="summary-list">
-          <div class="summary-item">
-            <strong>M5-1 Environmental Node</strong><br>
-            <span class="muted">Temperature: <span id="summary-temp">--</span></span><br>
-            <span class="muted">Humidity: <span id="summary-humi">--</span></span><br>
-            <span class="muted">Pressure: <span id="summary-pres">--</span></span><br>
-            <span class="muted">Status: <span id="summary-env-state">--</span></span>
-          </div>
-          <div class="summary-item">
-            <strong>M5-2 Access Node</strong><br>
-            <span class="muted">User: <span id="summary-access-user">--</span></span><br>
-            <span class="muted">Result: <span id="summary-access-result">--</span></span><br>
-            <span class="muted">Failed attempts: <span id="summary-failed-count">--</span></span>
-          </div>
-          <div class="summary-item">
-            <strong>M5-3 Alarm Node</strong><br>
-            <span class="muted">Distance: <span id="summary-distance">--</span></span><br>
-            <span class="muted">Alarm: <span id="summary-alarm-status">--</span></span><br>
-            <span class="muted">Alert count: <span id="summary-alert-count">--</span></span>
-          </div>
+
+        <div class="card">
+          <h3>气压曲线</h3>
+          <iframe
+            id="pressure-chart"
+            src="https://thingspeak.com/channels/3310921/charts/3?api_key=FHBWCGE1MAM8XI8X&dynamic=true&results=60&type=line&title=Pressure&xaxis=Time&yaxis=hPa"
+            frameborder="0"></iframe>
+        </div>
+
+        <div class="card">
+          <h3>统计信息</h3>
+          <p>平均温度：<span id="avg-temp">--</span></p>
+          <p>最高温度：<span id="max-temp">--</span></p>
+          <p>最低温度：<span id="min-temp">--</span></p>
+          <p>当前气压：<span id="pressure-now">-- hPa</span></p>
         </div>
       </div>
     </section>
 
     <section class="section">
-      <h2>Access and Alarm Logs</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Module</th>
-            <th>Latest Value 1</th>
-            <th>Latest Value 2</th>
-            <th>Latest Value 3</th>
-            <th>Updated Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>M5-2 Access</td>
-            <td id="log-access-f1">--</td>
-            <td id="log-access-f2">--</td>
-            <td id="log-access-f3">--</td>
-            <td id="log-access-time">--</td>
-          </tr>
-          <tr>
-            <td>M5-3 Alarm</td>
-            <td id="log-alarm-f1">--</td>
-            <td id="log-alarm-f2">--</td>
-            <td id="log-alarm-f3">--</td>
-            <td id="log-alarm-time">--</td>
-          </tr>
-        </tbody>
-      </table>
+      <h2>门禁日志</h2>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>用户 ID</th>
+              <th>结果</th>
+            </tr>
+          </thead>
+          <tbody id="access-table">
+            <tr><td colspan="3">加载中...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <section class="section">
-      <h2>Configured Parameters</h2>
-      <div class="steps">
-        <ul>
-          <li>M5-1 ENV: Channel ID = <code>3310921</code>, Field 1/2/3 = Temperature / Humidity / Pressure.</li>
-          <li>M5-2 Access: Channel ID = <code>3310941</code>, Read API Key = <code>F9BO8QS7NFVQI2T6</code>.</li>
-          <li>M5-3 Alarm: Channel ID = <code>3310977</code>, Read API Key = <code>0EXYZ8AHIY1RXIBT</code>.</li>
-        </ul>
+      <h2>安全报警与远程控制</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>当前距离</h3>
+          <div class="value" id="distance-value">-- cm</div>
+          <p>报警次数：<span id="alert-count">--</span></p>
+          <p>报警启用：<span id="alarm-enabled-text">--</span></p>
+        </div>
+
+        <div class="card">
+          <h3>远程控制</h3>
+          <button class="btn btn-primary" id="btn-alarm-on">开启报警</button>
+          <button class="btn btn-outline" id="btn-alarm-off">关闭报警</button>
+          <button class="btn btn-outline" id="btn-reset-alert">清零报警次数</button>
+          <p class="muted" style="margin-top:.5rem;">
+            提示：当前版本如未实现双向控制，可在报告中说明为未来扩展。
+          </p>
+        </div>
       </div>
     </section>
   </main>
 
   <script>
-    const CHANNELS = {
-      env: {
-        id: '3310921',
-        readKey: ''
-      },
-      access: {
-        id: '3310941',
-        readKey: 'F9BO8QS7NFVQI2T6'
-      },
-      alarm: {
-        id: '3310977',
-        readKey: '0EXYZ8AHIY1RXIBT'
-      }
-    };
-
-    const FIELD_MAP = {
-      env: { temperature: 1, humidity: 2, pressure: 3 },
-      access: { userId: 1, result: 2, failedCount: 3 },
-      alarm: { distance: 1, alarmStatus: 2, alertCount: 3 }
-    };
-
-    function buildFieldUrl(channelId, fieldId, readKey = '') {
-      let url = `https://api.thingspeak.com/channels/${channelId}/fields/${fieldId}/last.json`;
-      if (readKey) url += `?api_key=${readKey}`;
-      return url;
+  async function fetchJson(url) {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} ${url}`);
     }
+    return res.json();
+  }
 
-    function buildChartUrl(channelId, fieldId) {
-      return `https://thingspeak.com/channels/${channelId}/charts/${fieldId}?bgcolor=%23ffffff&color=%2301696f&dynamic=true&results=20&type=line`;
-    }
+  function accessResultLabel(resultCode) {
+    if (String(resultCode) === '1') return 'Success';
+    if (String(resultCode) === '0') return 'Fail';
+    return resultCode || '--';
+  }
 
-    async function fetchLastField(channelId, fieldId, readKey = '') {
-      const res = await fetch(buildFieldUrl(channelId, fieldId, readKey));
-      if (!res.ok) {
-        throw new Error(`ThingSpeak request failed: channel ${channelId}, field ${fieldId}, status ${res.status}`);
-      }
-      const data = await res.json();
-      return { value: data[`field${fieldId}`], created_at: data.created_at };
-    }
+  function alarmStatusLabel(alarmNum, alarmEnabled) {
+    if (alarmEnabled === 0) return 'DISABLED';
+    return alarmNum === 1 ? 'ON' : 'OFF';
+  }
 
-    async function fetchEnvNode() {
-      const [temp, humi, pres] = await Promise.all([
-        fetchLastField(CHANNELS.env.id, FIELD_MAP.env.temperature, CHANNELS.env.readKey),
-        fetchLastField(CHANNELS.env.id, FIELD_MAP.env.humidity, CHANNELS.env.readKey),
-        fetchLastField(CHANNELS.env.id, FIELD_MAP.env.pressure, CHANNELS.env.readKey)
+  function comfortLabel(temp) {
+    if (isNaN(temp)) return '--';
+    if (temp > 25) return 'too hot';
+    if (temp < 10) return 'too cold';
+    return 'comfortable';
+  }
+
+  async function fetchData() {
+    const envLastUrl =
+      'https://api.thingspeak.com/channels/3310921/feeds/last.json?api_key=FHBWCGE1MAM8XI8X';
+    const envHistoryUrl =
+      'https://api.thingspeak.com/channels/3310921/feeds.json?api_key=FHBWCGE1MAM8XI8X&results=20';
+
+    const accessLastUrl =
+      'https://api.thingspeak.com/channels/3329417/feeds/last.json?api_key=B9NPZYSCJ7FQUSXY';
+    const accessHistoryUrl =
+      'https://api.thingspeak.com/channels/3329417/feeds.json?api_key=B9NPZYSCJ7FQUSXY&results=10';
+
+    const alarmLastUrl =
+      'https://api.thingspeak.com/channels/3333946/feeds/last.json?api_key=CIN03736MJUQ1J4R';
+
+    try {
+      const results = await Promise.allSettled([
+        fetchJson(envLastUrl),
+        fetchJson(envHistoryUrl),
+        fetchJson(accessLastUrl),
+        fetchJson(accessHistoryUrl),
+        fetchJson(alarmLastUrl)
       ]);
-      return {
-        temperature: parseFloat(temp.value),
-        humidity: parseFloat(humi.value),
-        pressure: parseFloat(pres.value),
-        updated_at: temp.created_at
-      };
-    }
 
-    async function fetchAccessNode() {
-      const [userId, result, failedCount] = await Promise.all([
-        fetchLastField(CHANNELS.access.id, FIELD_MAP.access.userId, CHANNELS.access.readKey),
-        fetchLastField(CHANNELS.access.id, FIELD_MAP.access.result, CHANNELS.access.readKey),
-        fetchLastField(CHANNELS.access.id, FIELD_MAP.access.failedCount, CHANNELS.access.readKey)
-      ]);
-      return {
-        raw1: userId.value,
-        raw2: result.value,
-        raw3: failedCount.value,
-        user_id: userId.value,
-        result: result.value === '1' ? 'Success' : 'Fail',
-        failed_count: failedCount.value,
-        updated_at: userId.created_at
-      };
-    }
+      const envLast = results[0].status === 'fulfilled' ? results[0].value : null;
+      const envHistory = results[1].status === 'fulfilled' ? results[1].value : null;
+      const accessLast = results[2].status === 'fulfilled' ? results[2].value : null;
+      const accessHistory = results[3].status === 'fulfilled' ? results[3].value : null;
+      const alarmLast = results[4].status === 'fulfilled' ? results[4].value : null;
 
-    async function fetchAlarmNode() {
-      const [distance, alarmStatus, alertCount] = await Promise.all([
-        fetchLastField(CHANNELS.alarm.id, FIELD_MAP.alarm.distance, CHANNELS.alarm.readKey),
-        fetchLastField(CHANNELS.alarm.id, FIELD_MAP.alarm.alarmStatus, CHANNELS.alarm.readKey),
-        fetchLastField(CHANNELS.alarm.id, FIELD_MAP.alarm.alertCount, CHANNELS.alarm.readKey)
-      ]);
-      return {
-        raw1: distance.value,
-        raw2: alarmStatus.value,
-        raw3: alertCount.value,
-        distance: parseFloat(distance.value),
-        alarm_status: alarmStatus.value === '1' ? 'ON' : 'OFF',
-        alert_count: alertCount.value,
-        updated_at: distance.created_at
-      };
-    }
+      if (results[0].status === 'rejected') console.error('envLast failed:', results[0].reason);
+      if (results[1].status === 'rejected') console.error('envHistory failed:', results[1].reason);
+      if (results[2].status === 'rejected') console.error('accessLast failed:', results[2].reason);
+      if (results[3].status === 'rejected') console.error('accessHistory failed:', results[3].reason);
+      if (results[4].status === 'rejected') console.error('alarmLast failed:', results[4].reason);
 
-    function setText(id, value) {
-      const el = document.getElementById(id);
-      if (el) el.textContent = value;
-    }
+      console.log('envLast:', envLast);
+      console.log('envHistory:', envHistory);
+      console.log('accessLast:', accessLast);
+      console.log('accessHistory:', accessHistory);
+      console.log('alarmLast:', alarmLast);
 
-    function setComfortTag(state) {
-      const tag = document.getElementById('comfort-tag');
-      if (!tag) return;
-      if (state === 'Too Hot') {
-        tag.className = 'tag tag-hot';
-        tag.textContent = 'Too Hot';
-      } else if (state === 'Too Cold') {
-        tag.className = 'tag tag-cold';
-        tag.textContent = 'Too Cold';
-      } else if (state === 'Comfortable') {
-        tag.className = 'tag tag-ok';
-        tag.textContent = 'Comfortable';
-      } else {
-        tag.className = 'tag tag-warn';
-        tag.textContent = 'Waiting for data';
+      if (envLast) {
+        const temperature = Number(envLast.field1);
+        const humidity = Number(envLast.field2);
+        const pressure = Number(envLast.field3);
+
+        document.getElementById('temp-value').textContent =
+          isNaN(temperature) ? '-- °C' : temperature.toFixed(1) + ' °C';
+
+        document.getElementById('humi-value').textContent =
+          isNaN(humidity) ? '-- %' : humidity.toFixed(1) + ' %';
+
+        document.getElementById('pressure-value').textContent =
+          isNaN(pressure) ? '-- hPa' : pressure.toFixed(1) + ' hPa';
+
+        const pressureNowEl = document.getElementById('pressure-now');
+        if (pressureNowEl) {
+          pressureNowEl.textContent =
+            isNaN(pressure) ? '-- hPa' : pressure.toFixed(1) + ' hPa';
+        }
+
+        document.getElementById('comfort-state').textContent =
+          comfortLabel(temperature);
       }
-    }
 
-    function setEnvCharts() {
-      document.getElementById('temp-chart').src = buildChartUrl(CHANNELS.env.id, FIELD_MAP.env.temperature);
-      document.getElementById('humi-chart').src = buildChartUrl(CHANNELS.env.id, FIELD_MAP.env.humidity);
-      document.getElementById('pres-chart').src = buildChartUrl(CHANNELS.env.id, FIELD_MAP.env.pressure);
-    }
+      if (envHistory && Array.isArray(envHistory.feeds)) {
+        const tempValues = envHistory.feeds
+          .map(f => Number(f.field1))
+          .filter(v => !isNaN(v));
 
-    async function fetchData() {
-      try {
-        const [env, access, alarm] = await Promise.all([
-          fetchEnvNode(),
-          fetchAccessNode(),
-          fetchAlarmNode()
-        ]);
+        if (tempValues.length > 0) {
+          const avg = tempValues.reduce((sum, v) => sum + v, 0) / tempValues.length;
+          const min = Math.min(...tempValues);
+          const max = Math.max(...tempValues);
 
-        setText('temp-value', isNaN(env.temperature) ? '-- °C' : env.temperature.toFixed(1) + ' °C');
-        setText('humi-value', isNaN(env.humidity) ? '-- %' : env.humidity.toFixed(1) + ' %');
-        setText('pres-value', isNaN(env.pressure) ? '-- hPa' : env.pressure.toFixed(1) + ' hPa');
-
-        let comfort = '--';
-        if (!isNaN(env.temperature) && env.temperature > 25) comfort = 'Too Hot';
-        else if (!isNaN(env.temperature) && env.temperature < 15) comfort = 'Too Cold';
-        else if (!isNaN(env.temperature)) comfort = 'Comfortable';
-        setText('comfort-state', comfort);
-        setComfortTag(comfort);
-
-        setText('summary-temp', isNaN(env.temperature) ? '--' : env.temperature.toFixed(1) + ' °C');
-        setText('summary-humi', isNaN(env.humidity) ? '--' : env.humidity.toFixed(1) + ' %');
-        setText('summary-pres', isNaN(env.pressure) ? '--' : env.pressure.toFixed(1) + ' hPa');
-        setText('summary-env-state', comfort);
-
-        setText('access-result', access.result);
-        setText('access-user', access.user_id);
-        setText('summary-access-user', access.user_id);
-        setText('summary-access-result', access.result);
-        setText('summary-failed-count', access.failed_count);
-
-        setText('alarm-status', alarm.alarm_status);
-        setText('distance-value', isNaN(alarm.distance) ? '-- cm' : alarm.distance.toFixed(1) + ' cm');
-        setText('alert-count', alarm.alert_count);
-        setText('summary-distance', isNaN(alarm.distance) ? '--' : alarm.distance.toFixed(1) + ' cm');
-        setText('summary-alarm-status', alarm.alarm_status);
-        setText('summary-alert-count', alarm.alert_count);
-
-        setText('log-access-f1', access.raw1);
-        setText('log-access-f2', access.raw2);
-        setText('log-access-f3', access.raw3);
-        setText('log-access-time', access.updated_at ? new Date(access.updated_at).toLocaleString() : '--');
-
-        setText('log-alarm-f1', alarm.raw1);
-        setText('log-alarm-f2', alarm.raw2);
-        setText('log-alarm-f3', alarm.raw3);
-        setText('log-alarm-time', alarm.updated_at ? new Date(alarm.updated_at).toLocaleString() : '--');
-
-        setText('last-updated', new Date().toLocaleString());
-      } catch (error) {
-        console.error(error);
-        setText('last-updated', 'Read failed. Please check the field mapping or channel data.');
+          document.getElementById('avg-temp').textContent = avg.toFixed(1) + ' °C';
+          document.getElementById('max-temp').textContent = max.toFixed(1) + ' °C';
+          document.getElementById('min-temp').textContent = min.toFixed(1) + ' °C';
+        }
       }
-    }
 
-    setEnvCharts();
-    fetchData();
-    setInterval(fetchData, 15000);
-  </script>
+      if (accessLast) {
+        document.getElementById('access-result').textContent =
+          accessResultLabel(accessLast.field1);
+
+        document.getElementById('access-user').textContent =
+          accessLast.field3 || '--';
+
+        document.getElementById('access-event').textContent =
+          accessLast.field2 || '--';
+      }
+
+      if (accessHistory && Array.isArray(accessHistory.feeds)) {
+        const tbody = document.getElementById('access-table');
+        tbody.innerHTML = '';
+
+        if (accessHistory.feeds.length === 0) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = '<td colspan="3">暂无数据</td>';
+          tbody.appendChild(tr);
+        } else {
+          accessHistory.feeds.slice().reverse().forEach(feed => {
+            const tr = document.createElement('tr');
+            const time = feed.created_at ? new Date(feed.created_at).toLocaleString() : '--';
+            const userId = feed.field3 ?? '--';
+            const result = accessResultLabel(feed.field1);
+
+            tr.innerHTML = `
+              <td>${time}</td>
+              <td>${userId}</td>
+              <td>${result}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+      }
+
+      if (alarmLast) {
+        const distanceMm = Number(alarmLast.field1);
+        const alarmNum = Number(alarmLast.field2);
+        const alarmEnabled = Number(alarmLast.field3);
+        const alertCount = Number(alarmLast.field4);
+
+        document.getElementById('alarm-status').textContent =
+          alarmStatusLabel(alarmNum, alarmEnabled);
+
+        document.getElementById('alarm-time').textContent =
+          alarmLast.created_at ? new Date(alarmLast.created_at).toLocaleString() : '--';
+
+        document.getElementById('distance-value').textContent =
+          isNaN(distanceMm) ? '-- cm' : (distanceMm / 10).toFixed(1) + ' cm';
+
+        document.getElementById('alert-count').textContent =
+          isNaN(alertCount) ? '--' : alertCount;
+
+        const alarmEnabledText = document.getElementById('alarm-enabled-text');
+        if (alarmEnabledText) {
+          alarmEnabledText.textContent = alarmEnabled === 1 ? 'Enabled' : 'Disabled';
+        }
+      }
+
+      document.getElementById('last-updated').textContent =
+        new Date().toLocaleTimeString();
+
+    } catch (e) {
+      console.error('fetchData fatal error:', e);
+    }
+  }
+
+  fetchData();
+  setInterval(fetchData, 15000);
+
+  document.getElementById('btn-alarm-on').addEventListener('click', () => {
+    alert('这里可以接报警节点控制 API / Remote 页面');
+  });
+
+  document.getElementById('btn-alarm-off').addEventListener('click', () => {
+    alert('这里可以接报警节点关闭 API / Remote 页面');
+  });
+
+  document.getElementById('btn-reset-alert').addEventListener('click', () => {
+    alert('这里可以接报警计数清零 API');
+  });
+</script>
 </body>
 </html>
