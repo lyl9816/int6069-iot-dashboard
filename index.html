@@ -209,7 +209,7 @@
 
     .env-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(320px, 1fr));
+      grid-template-columns: repeat(4, minmax(240px, 1fr));
       gap: 20px;
     }
 
@@ -236,7 +236,7 @@
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      grid-template-columns: repeat(5, minmax(160px, 1fr)); /* 4 -> 5 列 */
       gap: 16px;
       margin-top: 20px;
     }
@@ -509,6 +509,14 @@
             <canvas id="pressureChart"></canvas>
           </div>
         </div>
+
+        <!-- 新增：声音曲线（原始值） -->
+        <div class="card chart-card">
+          <h3 class="card-title">声音曲线</h3>
+          <div class="chart-wrap">
+            <canvas id="noiseChart"></canvas>
+          </div>
+        </div>
       </div>
 
       <div class="stats-grid">
@@ -527,6 +535,11 @@
         <div class="stat-item">
           <div class="stat-label">当前气压</div>
           <div class="stat-value" id="pressure-now">-- hPa</div>
+        </div>
+        <!-- 新增：平均声音强度 -->
+        <div class="stat-item">
+          <div class="stat-label">平均声音强度</div>
+          <div class="stat-value" id="avg-noise">--</div>
         </div>
       </div>
     </section>
@@ -588,7 +601,7 @@
   </div>
 
   <script>
-    let tempChart, humiChart, pressureChart;
+    let tempChart, humiChart, pressureChart, noiseChart;
 
     function getStatusClass(text) {
       const value = String(text).toUpperCase();
@@ -709,6 +722,14 @@
       return 'Comfortable';
     }
 
+    // 声音强度的文字描述（基于原始值阈值，可按实际调）
+    function noiseLabel(noise) {
+      if (isNaN(noise)) return '--';
+      if (noise > 2500) return '很吵';
+      if (noise > 1500) return '偏吵';
+      return '安静';
+    }
+
     async function fetchData() {
       const envLastUrl =
         'https://api.thingspeak.com/channels/3310921/feeds/last.json?api_key=FHBWCGE1MAM8XI8X';
@@ -742,6 +763,7 @@
           const temperature = Number(envLast.field1);
           const humidity = Number(envLast.field2);
           const pressure = Number(envLast.field3);
+          const noise = Number(envLast.field4); // 声音原始值
 
           document.getElementById('temp-value').textContent =
             isNaN(temperature) ? '-- °C' : temperature.toFixed(1) + ' °C';
@@ -757,6 +779,8 @@
 
           document.getElementById('comfort-state').textContent =
             comfortLabel(temperature);
+
+          console.log('最新声音原始值:', noise, noiseLabel(noise));
         }
 
         if (envHistory && Array.isArray(envHistory.feeds)) {
@@ -770,15 +794,19 @@
           const tempData = feeds.map(f => Number(f.field1));
           const humiData = feeds.map(f => Number(f.field2));
           const pressureData = feeds.map(f => Number(f.field3));
+          const noiseData = feeds.map(f => Number(f.field4)); // 声音原始值历史
 
           tempChart = createOrUpdateChart(
-            tempChart, 'tempChart', 'Temperature', labels, tempData, '#ef4444', '°C'
+            tempChart, 'tempChart', 'Temperature', labels, tempData, '#ef4444', '温度 (°C)'
           );
           humiChart = createOrUpdateChart(
-            humiChart, 'humiChart', 'Humidity', labels, humiData, '#3b82f6', '%'
+            humiChart, 'humiChart', 'Humidity', labels, humiData, '#3b82f6', '湿度 (%)'
           );
           pressureChart = createOrUpdateChart(
-            pressureChart, 'pressureChart', 'Pressure', labels, pressureData, '#0f766e', 'hPa'
+            pressureChart, 'pressureChart', 'Pressure', labels, pressureData, '#0f766e', '气压 (hPa)'
+          );
+          noiseChart = createOrUpdateChart(
+            noiseChart, 'noiseChart', 'Sound', labels, noiseData, '#f97316', '声音强度（原始值）'
           );
 
           const tempValues = tempData.filter(v => !isNaN(v));
@@ -790,6 +818,13 @@
             document.getElementById('avg-temp').textContent = avg.toFixed(1) + ' °C';
             document.getElementById('max-temp').textContent = max.toFixed(1) + ' °C';
             document.getElementById('min-temp').textContent = min.toFixed(1) + ' °C';
+          }
+
+          // 新增：平均声音强度
+          const noiseValues = noiseData.filter(v => !isNaN(v));
+          if (noiseValues.length > 0) {
+            const avgNoise = noiseValues.reduce((sum, v) => sum + v, 0) / noiseValues.length;
+            document.getElementById('avg-noise').textContent = avgNoise.toFixed(0);
           }
         }
 
