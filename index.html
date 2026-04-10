@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>智慧教室 IoT 管理平台</title>
+  <title>Smart Classroom IoT Dashboard</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -126,7 +126,7 @@
 
     .top-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(220px, 1fr)); /* 适配 5 张卡片 */
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
       gap: 20px;
     }
 
@@ -437,92 +437,90 @@
   <div class="container">
     <header class="hero">
       <div>
-        <h1>智慧教室 IoT 管理平台</h1>
-        <p>实时监测环境、门禁与安全报警状态</p>
+        <h1>Smart Classroom IoT Dashboard</h1>
+        <p>Real-time monitoring of environment, access control and safety alarms</p>
       </div>
       <div class="hero-right">
-        <div class="pill"><span class="dot"></span> 系统在线</div>
-        <div class="pill">最后更新：<span id="last-updated">--</span></div>
+        <div class="pill"><span class="dot"></span> System Online</div>
+        <div class="pill">Last update: <span id="last-updated">--</span></div>
       </div>
     </header>
 
     <section class="top-grid">
       <div class="card metric-card">
         <div>
-          <div class="metric-label">当前温度</div>
+          <div class="metric-label">Current Temperature</div>
           <div class="metric-value" id="temp-value">-- °C</div>
-          <div class="metric-sub">状态：<span id="comfort-state">--</span></div>
+          <div class="metric-sub">Comfort: <span id="comfort-state">--</span></div>
         </div>
-        <div class="badge">环境节点</div>
+        <div class="badge">Environment Node</div>
       </div>
 
       <div class="card metric-card">
         <div>
-          <div class="metric-label">当前湿度</div>
+          <div class="metric-label">Current Humidity</div>
           <div class="metric-value" id="humi-value">-- %</div>
-          <div class="metric-sub">气压：<span id="pressure-value">-- hPa</span></div>
+          <div class="metric-sub">Pressure: <span id="pressure-value">-- hPa</span></div>
         </div>
-        <div class="badge">BME 数据</div>
+        <div class="badge">BME Sensor</div>
       </div>
 
       <div class="card metric-card">
         <div>
-          <div class="metric-label">最新门禁结果</div>
+          <div class="metric-label">Latest Access Result</div>
           <div id="access-result" class="status-pill status-neutral">--</div>
-          <div class="metric-sub" style="margin-top: 12px;">用户 ID：<span id="access-user">--</span></div>
-          <div class="metric-sub">事件：<span id="access-event">--</span></div>
+          <div class="metric-sub" style="margin-top: 12px;">User ID: <span id="access-user">--</span></div>
+          <div class="metric-sub">Event: <span id="access-event">--</span></div>
         </div>
-        <div class="badge">门禁节点</div>
+        <div class="badge">Access Node</div>
       </div>
 
       <div class="card metric-card">
         <div>
-          <div class="metric-label">报警状态</div>
+          <div class="metric-label">Alarm Status</div>
           <div id="alarm-status" class="status-pill status-neutral">--</div>
-          <div class="metric-sub" style="margin-top: 12px;">最近报警：<span id="alarm-time">--</span></div>
+          <div class="metric-sub" style="margin-top: 12px;">Last Alarm: <span id="alarm-time">--</span></div>
         </div>
-        <div class="badge">安全节点</div>
+        <div class="badge">Security Node</div>
       </div>
 
-      <!-- 新增：当前声音强度 -->
       <div class="card metric-card">
         <div>
-          <div class="metric-label">当前声音强度</div>
+          <div class="metric-label">Current Sound Level</div>
           <div class="metric-value" id="noise-value">--</div>
-          <div class="metric-sub">状态：<span id="noise-state">--</span></div>
+          <div class="metric-sub">Status: <span id="noise-state">--</span></div>
         </div>
-        <div class="badge">环境节点</div>
+        <div class="badge">Environment Node</div>
       </div>
     </section>
 
     <section class="section">
-      <h2>环境监测</h2>
+      <h2>Environment Monitoring</h2>
 
       <div class="env-grid">
         <div class="card chart-card">
-          <h3 class="card-title">温度曲线</h3>
+          <h3 class="card-title">Temperature Trend</h3>
           <div class="chart-wrap">
             <canvas id="tempChart"></canvas>
           </div>
         </div>
 
         <div class="card chart-card">
-          <h3 class="card-title">湿度曲线</h3>
+          <h3 class="card-title">Humidity Trend</h3>
           <div class="chart-wrap">
             <canvas id="humiChart"></canvas>
           </div>
         </div>
 
         <div class="card chart-card">
-          <h3 class="card-title">气压曲线</h3>
+          <h3 class="card-title">Pressure Trend</h3>
           <div class="chart-wrap">
             <canvas id="pressureChart"></canvas>
           </div>
         </div>
 
-        <!-- 声音曲线（原始值） -->
         <div class="card chart-card">
-          <h3 class="card-title">声音曲线</h3>
+          <h3 class="card-title">Sound Level Trend</h3>
           <div class="chart-wrap">
             <canvas id="noiseChart"></canvas>
           </div>
@@ -531,23 +529,23 @@
 
       <div class="stats-grid">
         <div class="stat-item">
-          <div class="stat-label">平均温度</div>
+          <div class="stat-label">Average Temperature</div>
           <div class="stat-value" id="avg-temp">-- °C</div>
         </div>
         <div class="stat-item">
-          <div class="stat-label">最高温度</div>
+          <div class="stat-label">Max Temperature</div>
           <div class="stat-value" id="max-temp">-- °C</div>
         </div>
         <div class="stat-item">
-          <div class="stat-label">最低温度</div>
+          <div class="stat-label">Min Temperature</div>
           <div class="stat-value" id="min-temp">-- °C</div>
         </div>
         <div class="stat-item">
-          <div class="stat-label">当前气压</div>
+          <div class="stat-label">Current Pressure</div>
           <div class="stat-value" id="pressure-now">-- hPa</div>
         </div>
         <div class="stat-item">
-          <div class="stat-label">平均声音强度</div>
+          <div class="stat-label">Average Sound Level</div>
           <div class="stat-value" id="avg-noise">--</div>
         </div>
       </div>
@@ -555,19 +553,19 @@
 
     <section class="lower-grid">
       <div class="card">
-        <h2>门禁日志</h2>
+        <h2>Access Log</h2>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>时间</th>
-                <th>用户 ID</th>
-                <th>结果</th>
+                <th>Time</th>
+                <th>User ID</th>
+                <th>Result</th>
               </tr>
             </thead>
             <tbody id="access-table">
               <tr>
-                <td>加载中...</td>
+                <td>Loading...</td>
                 <td></td>
                 <td></td>
               </tr>
@@ -577,27 +575,27 @@
       </div>
 
       <div class="card">
-        <h2>安全报警与远程控制</h2>
+        <h2>Safety Alarm & Remote Control</h2>
         <div class="alarm-panel">
           <div class="alarm-box">
-            <div class="metric-label">当前距离</div>
+            <div class="metric-label">Current Distance</div>
             <div class="alarm-big" id="distance-value">-- cm</div>
             <div class="alarm-meta">
-              报警次数：<span id="alert-count">--</span><br>
-              报警启用：
+              Alarm Count: <span id="alert-count">--</span><br>
+              Alarm Enabled:
               <span id="alarm-enabled-text" class="status-pill status-neutral" style="margin-top: 8px;">--</span>
             </div>
           </div>
 
           <div class="alarm-box">
-            <div class="card-title">远程控制</div>
+            <div class="card-title">Remote Control</div>
             <div class="btn-group">
-              <button class="btn btn-on" id="btn-alarm-on">开启报警</button>
-              <button class="btn btn-off" id="btn-alarm-off">关闭报警</button>
-              <button class="btn btn-reset" id="btn-reset-alert">重置计数</button>
+              <button class="btn btn-on" id="btn-alarm-on">Enable Alarm</button>
+              <button class="btn btn-off" id="btn-alarm-off">Disable Alarm</button>
+              <button class="btn btn-reset" id="btn-reset-alert">Reset Count</button>
             </div>
             <p class="metric-sub" style="margin-top: 12px;">
-              提示：当前版本如未实现双向控制，可在报告中说明为未来扩展。
+              Note: If two-way control is not implemented, you can mention it as a future extension in the report.
             </p>
           </div>
         </div>
@@ -605,7 +603,7 @@
     </section>
 
     <div class="footer-note">
-      智慧教室 IoT Dashboard · GitHub Pages
+      Smart Classroom IoT Dashboard · GitHub Pages
     </div>
   </div>
 
@@ -714,8 +712,8 @@
     }
 
     function accessResultLabel(resultCode) {
-      if (String(resultCode) === '1') return 'Success';
-      if (String(resultCode) === '0') return 'Fail';
+      if (String(resultCode) === '1') return 'SUCCESS';
+      if (String(resultCode) === '0') return 'FAIL';
       return resultCode || '--';
     }
 
@@ -731,12 +729,12 @@
       return 'Comfortable';
     }
 
-    // 声音强度的文字描述（基于原始值阈值，可按实际调）
+    // Sound level description based on raw value
     function noiseLabel(noise) {
       if (isNaN(noise)) return '--';
-      if (noise > 2500) return '很吵';
-      if (noise > 1500) return '偏吵';
-      return '安静';
+      if (noise > 2500) return 'Very noisy';
+      if (noise > 1500) return 'Noisy';
+      return 'Quiet';
     }
 
     async function fetchData() {
@@ -772,7 +770,7 @@
           const temperature = Number(envLast.field1);
           const humidity = Number(envLast.field2);
           const pressure = Number(envLast.field3);
-          const noise = Number(envLast.field4); // 声音原始值
+          const noise = Number(envLast.field4); // raw sound level
 
           document.getElementById('temp-value').textContent =
             isNaN(temperature) ? '-- °C' : temperature.toFixed(1) + ' °C';
@@ -789,7 +787,7 @@
           document.getElementById('comfort-state').textContent =
             comfortLabel(temperature);
 
-          // 更新顶部当前声音强度卡片
+          // update sound card
           const noiseValueEl = document.getElementById('noise-value');
           const noiseStateEl = document.getElementById('noise-state');
 
@@ -813,19 +811,19 @@
           const tempData = feeds.map(f => Number(f.field1));
           const humiData = feeds.map(f => Number(f.field2));
           const pressureData = feeds.map(f => Number(f.field3));
-          const noiseData = feeds.map(f => Number(f.field4)); // 声音原始值历史
+          const noiseData = feeds.map(f => Number(f.field4));
 
           tempChart = createOrUpdateChart(
-            tempChart, 'tempChart', 'Temperature', labels, tempData, '#ef4444', '温度 (°C)'
+            tempChart, 'tempChart', 'Temperature', labels, tempData, '#ef4444', 'Temperature (°C)'
           );
           humiChart = createOrUpdateChart(
-            humiChart, 'humiChart', 'Humidity', labels, humiData, '#3b82f6', '湿度 (%)'
+            humiChart, 'humiChart', 'Humidity', labels, humiData, '#3b82f6', 'Humidity (%)'
           );
           pressureChart = createOrUpdateChart(
-            pressureChart, 'pressureChart', 'Pressure', labels, pressureData, '#0f766e', '气压 (hPa)'
+            pressureChart, 'pressureChart', 'Pressure', labels, pressureData, '#0f766e', 'Pressure (hPa)'
           );
           noiseChart = createOrUpdateChart(
-            noiseChart, 'noiseChart', 'Sound', labels, noiseData, '#f97316', '声音强度（原始值）'
+            noiseChart, 'noiseChart', 'Sound Level', labels, noiseData, '#f97316', 'Sound (raw value)'
           );
 
           const tempValues = tempData.filter(v => !isNaN(v));
@@ -839,7 +837,6 @@
             document.getElementById('min-temp').textContent = min.toFixed(1) + ' °C';
           }
 
-          // 平均声音强度
           const noiseValues = noiseData.filter(v => !isNaN(v));
           if (noiseValues.length > 0) {
             const avgNoise = noiseValues.reduce((sum, v) => sum + v, 0) / noiseValues.length;
@@ -861,7 +858,7 @@
 
           if (accessHistory.feeds.length === 0) {
             const tr = document.createElement('tr');
-            tr.innerHTML = '<td colspan="3">暂无数据</td>';
+            tr.innerHTML = '<td colspan="3">No data</td>';
             tbody.appendChild(tr);
           } else {
             accessHistory.feeds.slice().reverse().forEach(feed => {
@@ -901,7 +898,7 @@
           document.getElementById('alert-count').textContent =
             isNaN(alertCount) ? '--' : alertCount;
 
-          setStatusBadge('alarm-enabled-text', alarmEnabled === 1 ? 'Enabled' : 'Disabled');
+          setStatusBadge('alarm-enabled-text', alarmEnabled === 1 ? 'ENABLED' : 'DISABLED');
         }
 
         document.getElementById('last-updated').textContent =
@@ -916,15 +913,15 @@
     setInterval(fetchData, 15000);
 
     document.getElementById('btn-alarm-on').addEventListener('click', () => {
-      alert('这里可以接报警节点控制 API / Remote 页面');
+      alert('This button can be connected to the alarm enable API / remote page.');
     });
 
     document.getElementById('btn-alarm-off').addEventListener('click', () => {
-      alert('这里可以接报警节点关闭 API / Remote 页面');
+      alert('This button can be connected to the alarm disable API / remote page.');
     });
 
     document.getElementById('btn-reset-alert').addEventListener('click', () => {
-      alert('这里可以接报警计数清零 API');
+      alert('This button can be connected to the alarm counter reset API.');
     });
   </script>
 </body>
