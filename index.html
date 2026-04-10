@@ -126,7 +126,7 @@
 
     .top-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(220px, 1fr));
+      grid-template-columns: repeat(3, minmax(220px, 1fr)); /* 适配 5 张卡片 */
       gap: 20px;
     }
 
@@ -236,7 +236,7 @@
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(160px, 1fr)); /* 4 -> 5 列 */
+      grid-template-columns: repeat(5, minmax(160px, 1fr));
       gap: 16px;
       margin-top: 20px;
     }
@@ -483,6 +483,16 @@
         </div>
         <div class="badge">安全节点</div>
       </div>
+
+      <!-- 新增：当前声音强度 -->
+      <div class="card metric-card">
+        <div>
+          <div class="metric-label">当前声音强度</div>
+          <div class="metric-value" id="noise-value">--</div>
+          <div class="metric-sub">状态：<span id="noise-state">--</span></div>
+        </div>
+        <div class="badge">环境节点</div>
+      </div>
     </section>
 
     <section class="section">
@@ -510,7 +520,7 @@
           </div>
         </div>
 
-        <!-- 新增：声音曲线（原始值） -->
+        <!-- 声音曲线（原始值） -->
         <div class="card chart-card">
           <h3 class="card-title">声音曲线</h3>
           <div class="chart-wrap">
@@ -536,7 +546,6 @@
           <div class="stat-label">当前气压</div>
           <div class="stat-value" id="pressure-now">-- hPa</div>
         </div>
-        <!-- 新增：平均声音强度 -->
         <div class="stat-item">
           <div class="stat-label">平均声音强度</div>
           <div class="stat-value" id="avg-noise">--</div>
@@ -780,7 +789,17 @@
           document.getElementById('comfort-state').textContent =
             comfortLabel(temperature);
 
-          console.log('最新声音原始值:', noise, noiseLabel(noise));
+          // 更新顶部当前声音强度卡片
+          const noiseValueEl = document.getElementById('noise-value');
+          const noiseStateEl = document.getElementById('noise-state');
+
+          if (!isNaN(noise)) {
+            noiseValueEl.textContent = noise.toFixed(0);
+            noiseStateEl.textContent = noiseLabel(noise);
+          } else {
+            noiseValueEl.textContent = '--';
+            noiseStateEl.textContent = '--';
+          }
         }
 
         if (envHistory && Array.isArray(envHistory.feeds)) {
@@ -820,7 +839,7 @@
             document.getElementById('min-temp').textContent = min.toFixed(1) + ' °C';
           }
 
-          // 新增：平均声音强度
+          // 平均声音强度
           const noiseValues = noiseData.filter(v => !isNaN(v));
           if (noiseValues.length > 0) {
             const avgNoise = noiseValues.reduce((sum, v) => sum + v, 0) / noiseValues.length;
